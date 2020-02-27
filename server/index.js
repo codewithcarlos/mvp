@@ -34,7 +34,6 @@ app.get("/card", (req, res) => {
 app.get("/name", (req, res) => {
   console.log("name triggered");
   findCardByName("Dark Confidant", data => {
-    // console.log("superman", data);
     let firstValidCard;
     for (let i = 0; i < data.length; i++) {
       console.log("multiversid is:", data[i].multiverseid);
@@ -43,16 +42,17 @@ app.get("/name", (req, res) => {
         break;
       }
     }
-    console.log("carlos", firstValidCard);
     res.status(200).send(firstValidCard);
-    // const { name, imageUrl, multiverseid } = data.card;
-    // db.insertCard([name, imageUrl, multiverseid], (err, result) => {
-    //   if (err) {
-    //     return res.status(404).send("error inserting card into the db");
-    //   }
-    //   console.log("sql data", data);
-    //   res.status(200).send(data);
-    // });
+  });
+});
+
+app.get("/deck", (req, res) => {
+  db.getDeck(req.query.mainDeck, (err, data) => {
+    if (err) {
+      console.log("error getting deck", err);
+      return res.status(404).send("error getting deck");
+    }
+    res.status(200).send(data);
   });
 });
 

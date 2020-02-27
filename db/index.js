@@ -21,7 +21,28 @@ function insertCard(params, callback) {
   });
 }
 
+function getDeck(deck, callback) {
+  const deckWithImageInfo = [];
+  deck.forEach((card, index) => {
+    let queryString = `SELECT * FROM cards WHERE name = ?`;
+    db.query(queryString, card, (err, data) => {
+      if (err) {
+        // console.log(data);
+        callback(err, null);
+      } else {
+        // console.log(data);
+        deckWithImageInfo.push(data[0]);
+      }
+      if (index === deck.length - 1) {
+        // console.log(deckWithImageInfo);
+        callback(null, deckWithImageInfo);
+      }
+    });
+  });
+}
+
 module.exports = {
   db,
-  insertCard
+  insertCard,
+  getDeck
 };

@@ -44,18 +44,26 @@ const deck = [
   "Veil of Summer"
 ];
 
-let j = 29;
+let j = 0;
 var populate = () => {
-  console.log(j);
   findCardByName(deck[j], data => {
     let firstValidCard;
+    let multiverseid;
     for (let i = 0; i < data.length; i++) {
       if (data[i].multiverseid) {
         firstValidCard = data[i];
         break;
       }
     }
-    const { name, imageUrl, multiverseid } = firstValidCard;
+    console.log(j);
+    if (!firstValidCard) {
+      firstValidCard = data[0];
+      multiverseid = -1;
+    } else {
+      multiverseid = firstValidCard.multiverseid;
+    }
+    const { name, imageUrl } = firstValidCard;
+    // console.log(name, imageUrl, multiverseid, firstValidCard);
     insertCard([name, imageUrl, multiverseid], (err, result) => {
       if (err) {
         console.log("error inserting card into the db", j);
