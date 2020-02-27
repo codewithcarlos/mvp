@@ -1,0 +1,11 @@
+.card-image {
+  width: 100%;
+}
+
+.hand {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  width: 70%;
+  grid-gap: 0.5rem;
+  margin-top: 1%;
+}

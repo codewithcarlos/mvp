@@ -1,0 +1,12 @@
+DROP DATABASE IF EXISTS mtg;
+
+CREATE DATABASE mtg;
+
+USE mtg;
+
+CREATE TABLE cards (
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  imageUrl TEXT NOT NULL,
+  multiverseid INT
+);

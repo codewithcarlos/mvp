@@ -1,0 +1,42 @@
+{
+  "name": "mvp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build:dev": "webpack -d --watch",
+    "start": "node server/server.js",
+    "server:dev": "nodemon server/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codewithcarlos/mvp.git"
+  },
+  "keywords": [],
+  "author": "Carlos Munoz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/codewithcarlos/mvp/issues"
+  },
+  "homepage": "https://github.com/codewithcarlos/mvp#readme",
+  "dependencies": {
+    "@babel/core": "^7.8.4",
+    "@babel/preset-env": "^7.8.4",
+    "@babel/preset-react": "^7.8.3",
+    "axios": "^0.19.2",
+    "babel-loader": "^8.0.6",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mtgsdk": "^0.4.3",
+    "mysql": "^2.18.1",
+    "path": "^0.12.7",
+    "react": "^16.13.0",
+    "react-dom": "^16.13.0",
+    "request": "^2.88.2",
+    "webpack": "^4.41.6",
+    "webpack-cli": "^3.3.11"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
