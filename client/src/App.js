@@ -3,11 +3,16 @@ import mockDeck from "./mockDeck";
 import Deck from "./Deck";
 import Hand from "./Hand";
 import axios from "axios";
+import Commands from "./Commands";
+import Battleground from "./Battleground";
 
 const App = () => {
   const [mainDeck, setMainDeck] = useState([""]);
   const [sideboard, setSideboard] = useState([""]);
   const [deckWithImages, setDeckWithImages] = useState({});
+  const [handSize, setHandSize] = useState(7);
+  const [indexCounter, setIndexCounter] = useState(0);
+  const [field, setField] = useState([]);
 
   useEffect(() => {
     shuffleDeck();
@@ -109,16 +114,71 @@ const App = () => {
       });
   };
 
+  const drawCard = () => {
+    if (mainDeck.length === 0) return;
+    const newHandSize = handSize + 1;
+    console.log(newHandSize);
+    setHandSize(newHandSize);
+  };
+
+  const onDragOver = e => {
+    if (e) e.preventDefault();
+  };
+
+  const onDragStart = e => {
+    console.log("onDragStart", e.target.id);
+    if (e.dataTransfer) e.dataTransfer.setData("Text", e.target.id);
+  };
+
+  const onDrop = e => {
+    if (e && e.dataTransfer) {
+      let dataID = parseInt(e.dataTransfer.getData("Text"));
+      console.log("ondrop triggered", e.dataTransfer.getData("Text"));
+      let movedCard = deckWithImages[dataID];
+      let updatedDeck = [
+        ...deckWithImages.slice(0, dataID),
+        ...deckWithImages.slice(dataID + 1)
+      ];
+      console.log(typeof dataID, dataID);
+      console.log("updated deck is", deckWithImages, updatedDeck);
+      setDeckWithImages(updatedDeck);
+      setField([...field, movedCard]);
+      setHandSize(handSize - 1);
+      e.preventDefault();
+    }
+  };
+
   return (
     <div className="App">
       Magic the Gathering
-      {deckWithImages.length > 0 && <Hand deckWithImages={deckWithImages} />}
+      <Commands
+        shuffleDeck={shuffleDeck}
+        findCardByName={findCardByName}
+        getCardImages={getCardImages}
+        drawCard={drawCard}
+      />
       <Deck />
-      <button onClick={() => shuffleDeck()}>Shuffle</button>
-      <button onClick={() => getMagicCard()}>Get Card</button>
-      {/* <button onClick={() => addCardToDatabase()}>Add Card To DB</button> */}
-      <button onClick={() => findCardByName()}>Find Card By Name</button>
-      <button onClick={() => getCardImages()}>Get Card Images</button>
+      <Battleground
+        onDrop={onDrop}
+        onDragOver={onDragOver}
+        onDragStart={onDragStart}
+        indexCounter={indexCounter}
+        setIndexCounter={setIndexCounter}
+        field={field}
+      />
+      {deckWithImages.length > 0 && (
+        <div>
+          <Hand
+            deckWithImages={deckWithImages}
+            handSize={handSize}
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+            onDragStart={onDragStart}
+            indexCounter={indexCounter}
+            setIndexCounter={setIndexCounter}
+          />
+        </div>
+      )}
     </div>
   );
 };

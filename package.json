@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build:dev": "webpack -d --watch",
-    "start": "node server/server.js",
-    "server:dev": "nodemon server/server.js"
+    "start": "node server/index.js",
+    "server:dev": "nodemon server/index.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,7 @@
   "homepage": "https://github.com/codewithcarlos/mvp#readme",
   "dependencies": {
     "@babel/core": "^7.8.4",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/preset-env": "^7.8.4",
     "@babel/preset-react": "^7.8.3",
     "axios": "^0.19.2",
@@ -32,7 +33,10 @@
     "path": "^0.12.7",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
+    "react-draggable": "^4.2.0",
+    "react-dropzone": "^10.2.1",
     "request": "^2.88.2",
+    "styled-components": "^5.0.1",
     "webpack": "^4.41.6",
     "webpack-cli": "^3.3.11"
   },

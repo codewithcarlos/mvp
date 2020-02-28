@@ -1,13 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 
-const Card = ({ card }) => {
-  // console.log("card is", card);
-  // const image =
-  //   "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=3&type=card";
-  // const name = "Black Lotus";
+const Card = ({ card, indexCounter, setIndexCounter, i, onDragStart }) => {
+  const [position, setPostion] = useState({ left: 8 + 150 * i, top: 570 });
+  // console.log("i", i);
   return (
-    <div>
-      <img className="card-image" src={card.imageUrl} alt={card.name} />
+    <div className="card" onDragStart={e => onDragStart(e)}>
+      <div className="card-image-container">
+        <img
+          src={card.imageUrl}
+          alt={card.name}
+          className="card-image"
+          id={i}
+          // onMouseDown={add}
+          // onMouseUp={remove}
+          // onDoubleClick={rotate}
+          // style={divStyle}
+        />
+      </div>
     </div>
   );
 };
