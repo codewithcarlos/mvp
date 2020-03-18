@@ -150,14 +150,13 @@ const App = () => {
 
   return (
     <div className="App">
-      Magic the Gathering
+      <img src="https://starlightrunner.com/wp-content/uploads/2019/09/Magic-The-Gathering-logo-800x279.png" className="mtg-logo"/>
       <Commands
         shuffleDeck={shuffleDeck}
         findCardByName={findCardByName}
         getCardImages={getCardImages}
         drawCard={drawCard}
       />
-      <Deck />
       <Battleground
         onDrop={onDrop}
         onDragOver={onDragOver}
@@ -167,7 +166,7 @@ const App = () => {
         field={field}
       />
       {deckWithImages.length > 0 && (
-        <div>
+        <div className="inline">
           <Hand
             deckWithImages={deckWithImages}
             handSize={handSize}
@@ -179,6 +178,7 @@ const App = () => {
           />
         </div>
       )}
+      <Deck drawCard={drawCard} />
     </div>
   );
 };

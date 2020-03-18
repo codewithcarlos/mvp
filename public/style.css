@@ -22,8 +22,9 @@
 
 .hand {
   display: flex;
-  width: 70%;
-  margin: 0 1%;
+  width: 75vw;
+  margin: 0 -0.5%;
+  overflow: auto;
 }
 
 .rotated {
@@ -32,13 +33,16 @@
 
 #battleground {
   height: 475px;
-  margin-bottom: 25px;
-  background: green;
+  margin-bottom: 15px;
+  background-image: url("https://227rsi2stdr53e3wto2skssd7xe-wpengine.netdna-ssl.com/wp-content/uploads/2016/05/deathrite-shaman-1024x592.jpg");
   z-index: -1;
   display: flex;
   align-items: center;
   vertical-align: bottom;
-  width: 70%;
+  /* width: 70%; */
+  background-repeat: no-repeat;
+  /* background-attachment: fixed;
+  background-position: center; */
 }
 
 /* React draggable element  */
@@ -48,13 +52,10 @@
 html,
 body {
   height: 100%;
-}
-
-body {
   color: #222;
   font-family: "Helvetica Neue", sans-serif;
   font-weight: 200;
-  margin: 0 50px;
+  margin: 0 25px;
 }
 
 .react-draggable,
@@ -91,3 +92,22 @@ body {
   padding: 10px;
   float: left;
 }
+
+#deck {
+  display: inline-block;
+  float: right;
+}
+
+.inline {
+  display: inline-block;
+}
+.mtg-logo {
+  height: 100px;
+  width: auto;
+  display: flex;
+  justify-content: center;
+}
+
+/* .commands {
+  display: inline;
+} */
