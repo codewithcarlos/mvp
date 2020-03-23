@@ -14,6 +14,7 @@
 }
 
 .card-image-container {
+  float: left;
   position: relative;
 }
 .card {
@@ -33,18 +34,17 @@
 
 #battleground {
   height: 475px;
+  width: 1024px;
   margin-bottom: 15px;
   background-image: url("https://227rsi2stdr53e3wto2skssd7xe-wpengine.netdna-ssl.com/wp-content/uploads/2016/05/deathrite-shaman-1024x592.jpg");
   z-index: -1;
-  display: flex;
-  align-items: center;
-  vertical-align: bottom;
-  /* width: 70%; */
   background-repeat: no-repeat;
-  /* background-attachment: fixed;
-  background-position: center; */
 }
-
+.bg-container {
+  height: 475px;
+  width: 1024px;
+  position: relative;
+}
 /* React draggable element  */
 * {
   box-sizing: border-box;

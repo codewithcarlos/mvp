@@ -1,30 +1,27 @@
-import React from "react";
-import Drag from "./DraggableCard";
+import React, { useState } from "react";
+import DraggableCard from "./DraggableCard";
 
-const Battleground = ({
-  onDrop,
-  onDragOver,
-  onDragStart,
-  indexCounter,
-  setIndexCounter,
-  field
-}) => {
+const Battleground = ({ onDrop, onDragOver, field, coordinates }) => {
+  const [indexCounter, setIndexCounter] = useState(0);
+  // console.log("battleground rerendered");
   return (
     <div
       id="battleground"
-      onDrop={e => onDrop(event)}
+      onDrop={e => onDrop(e)}
       onDragOver={e => onDragOver(e)}
     >
-      {field.map((card, i) => (
-        <Drag
-          card={card}
-          key={i}
-          i={i}
-          onDragStart={onDragStart}
-          indexCounter={indexCounter}
-          setIndexCounter={setIndexCounter}
-        />
-      ))}
+      <div className="bg-container">
+        {field.map((card, i) => (
+          <DraggableCard
+            card={card}
+            key={i}
+            i={i}
+            indexCounter={indexCounter}
+            setIndexCounter={setIndexCounter}
+            coordinates={coordinates}
+          />
+        ))}
+      </div>
     </div>
   );
 };

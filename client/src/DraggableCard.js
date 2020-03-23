@@ -10,20 +10,12 @@ class DraggableCard extends React.Component {
         x: 0,
         y: 0
       },
-      controlledPosition: {
-        x: -400,
-        y: 200
-      },
       isRotated: false,
       counter: 0
     };
     this.handleDrag = this.handleDrag.bind(this);
     this.onStart = this.onStart.bind(this);
     this.onStop = this.onStop.bind(this);
-    this.adjustXPos = this.adjustXPos.bind(this);
-    this.adjustYPos = this.adjustYPos.bind(this);
-    this.onControlledDrag = this.onControlledDrag.bind(this);
-    this.onControlledDragStop = this.onControlledDragStop.bind(this);
     this.rotate = this.rotate.bind(this);
   }
 
@@ -38,75 +30,55 @@ class DraggableCard extends React.Component {
   }
 
   onStart(e) {
-    console.log("onStart", e.target, this.state.counter);
-    const el = e.target;
+    console.log("onstart");
     let newCounter = this.props.indexCounter + 1;
     this.props.setIndexCounter(newCounter);
-    this.setState({ counter: newCounter });
-    this.setState({ activeDrags: ++this.state.activeDrags });
+    this.setState({
+      counter: newCounter
+      // activeDrags: this.state.activeDrags + 1
+    });
   }
 
   onStop() {
-    console.log("remove");
-    this.setState({ activeDrags: --this.state.activeDrags }, () =>
-      console.log("active drags", this.state.activeDrags)
-    );
+    // this.setState({ activeDrags: this.state.activeDrags - 1 });
   }
 
-  // For controlled component
-  adjustXPos(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    const { x, y } = this.state.controlledPosition;
-    this.setState({ controlledPosition: { x: x - 10, y } });
-  }
-
-  adjustYPos(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    const { controlledPosition } = this.state;
-    const { x, y } = controlledPosition;
-    this.setState({ controlledPosition: { x, y: y - 10 } });
-  }
-
-  onControlledDrag(e, position) {
-    const { x, y } = position;
-    this.setState({ controlledPosition: { x, y } });
-  }
-
-  onControlledDragStop(e, position) {
-    this.onControlledDrag(e, position);
-    this.onStop();
-  }
   rotate() {
     let isRotated = !this.state.isRotated;
-    console.log("isrotated now", isRotated);
     this.setState({ isRotated });
   }
 
   render() {
+    // console.log("draggable card rerendered");
     const dragHandlers = { onStart: this.onStart, onStop: this.onStop };
-    // const { deltaPosition, controlledPosition } = this.state;
-    const { card, indexCounter, setIndexCounter, i, onDragStart } = this.props;
+    // const { deltaPosition } = this.state;
+    // console.log("deltaPosition", deltaPosition);
+
+    const { card, i, coordinates } = this.props;
+    const { x, y } = coordinates[card.cardID];
+
     return (
-      <div className="card" onDragStart={e => onDragStart(e)}>
-        <Draggable {...dragHandlers}>
-          <div
-            className="card-image-container"
-            style={{ zIndex: this.state.counter }}
-          >
-            <img
-              src={card.imageUrl}
-              alt={card.name}
-              className={
-                this.state.isRotated ? "card-image rotated" : "card-image"
-              }
-              onDoubleClick={this.rotate}
-              id={i}
-            />
-          </div>
-        </Draggable>
-      </div>
+      <Draggable bounds="parent" onDrag={this.handleDrag} {...dragHandlers}>
+        <div
+          className="card-image-container"
+          style={{
+            zIndex: this.state.counter,
+            left: x,
+            top: y,
+            position: "absolute"
+          }}
+        >
+          <img
+            src={card.imageUrl}
+            alt={card.name}
+            className={
+              this.state.isRotated ? "card-image rotated" : "card-image"
+            }
+            onDoubleClick={this.rotate}
+            id={i}
+          />
+        </div>
+      </Draggable>
     );
   }
 }

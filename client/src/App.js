@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import mockDeck from "./mockDeck";
 import Deck from "./Deck";
 import Hand from "./Hand";
@@ -11,8 +11,9 @@ const App = () => {
   const [sideboard, setSideboard] = useState([""]);
   const [deckWithImages, setDeckWithImages] = useState({});
   const [handSize, setHandSize] = useState(7);
-  const [indexCounter, setIndexCounter] = useState(0);
+  const [hand, setHand] = useState({});
   const [field, setField] = useState([]);
+  const [coordinates, setCoordinates] = useState({});
 
   useEffect(() => {
     shuffleDeck();
@@ -37,9 +38,6 @@ const App = () => {
       for (let i = 0; i < quantity; i++) {
         deck.push(cardName.trim());
       }
-      // for (let i = 0; i < quantity; i++) {
-      //   deck.push(cardName);
-      // }
     });
     // console.log("unique deck", deck);
     const mainDeck = deck.slice(0, mainDeckIndex);
@@ -106,8 +104,11 @@ const App = () => {
       })
       .then(({ data }) => {
         console.log("getCardImages", data);
-        // const { name, imageUrl, multiverseid } = data;
-        setDeckWithImages(data);
+        for (let i = 0; i < data.length; i++) {
+          data[i]["cardID"] = i;
+        }
+        setHand(data.slice(0, handSize));
+        setDeckWithImages(data.slice(handSize));
       })
       .catch(err => {
         console.log("error", err);
@@ -115,10 +116,12 @@ const App = () => {
   };
 
   const drawCard = () => {
-    if (mainDeck.length === 0) return;
-    const newHandSize = handSize + 1;
-    console.log(newHandSize);
-    setHandSize(newHandSize);
+    if (deckWithImages.length === 0) return;
+    const updatedDeck = [...deckWithImages];
+    const movedCard = updatedDeck.splice(0, 1);
+    setHand([...hand, ...movedCard]);
+    setDeckWithImages(updatedDeck);
+    setHandSize(handSize + 1);
   };
 
   const onDragOver = e => {
@@ -126,22 +129,42 @@ const App = () => {
   };
 
   const onDragStart = e => {
-    console.log("onDragStart", e.target.id);
+    e.persist();
+    console.log("onDragStart", e.target.id, e);
+    console.log(deckWithImages.length);
     if (e.dataTransfer) e.dataTransfer.setData("Text", e.target.id);
   };
 
   const onDrop = e => {
+    if (!deckWithImages.length) return;
     if (e && e.dataTransfer) {
-      let dataID = parseInt(e.dataTransfer.getData("Text"));
-      console.log("ondrop triggered", e.dataTransfer.getData("Text"));
-      let movedCard = deckWithImages[dataID];
-      let updatedDeck = [
-        ...deckWithImages.slice(0, dataID),
-        ...deckWithImages.slice(dataID + 1)
-      ];
-      console.log(typeof dataID, dataID);
-      console.log("updated deck is", deckWithImages, updatedDeck);
-      setDeckWithImages(updatedDeck);
+      let dataID = e.dataTransfer.getData("Text");
+
+      if (dataID === "deck-img") {
+        const updatedDeck = [...deckWithImages];
+        const movedCard = updatedDeck.splice(0, 1);
+        console.log("triggered", movedCard);
+        setCoordinates({
+          ...coordinates,
+          [movedCard[0].cardID]: { x: e.pageX - 150, y: e.pageY - 80 }
+        });
+        setField([...field, ...movedCard]);
+        setDeckWithImages(updatedDeck);
+        return;
+      }
+
+      dataID = parseInt(dataID);
+      // console.log("ondrop triggered", e.dataTransfer.getData("Text"));
+      const movedCard = hand.find(card => card.cardID === dataID);
+      // console.log("moved card is", movedCard);
+      const updatedHand = hand.filter(card => card.cardID !== movedCard.cardID);
+
+      setCoordinates({
+        ...coordinates,
+        [dataID]: { x: e.pageX - 150, y: e.pageY - 160 }
+      });
+      // setDeckWithImages(updatedDeck);
+      setHand(updatedHand);
       setField([...field, movedCard]);
       setHandSize(handSize - 1);
       e.preventDefault();
@@ -150,7 +173,10 @@ const App = () => {
 
   return (
     <div className="App">
-      <img src="https://starlightrunner.com/wp-content/uploads/2019/09/Magic-The-Gathering-logo-800x279.png" className="mtg-logo"/>
+      {/* <img
+        src="https://starlightrunner.com/wp-content/uploads/2019/09/Magic-The-Gathering-logo-800x279.png"
+        className="mtg-logo"
+      /> */}
       <Commands
         shuffleDeck={shuffleDeck}
         findCardByName={findCardByName}
@@ -160,25 +186,22 @@ const App = () => {
       <Battleground
         onDrop={onDrop}
         onDragOver={onDragOver}
-        onDragStart={onDragStart}
-        indexCounter={indexCounter}
-        setIndexCounter={setIndexCounter}
         field={field}
+        coordinates={coordinates}
       />
       {deckWithImages.length > 0 && (
         <div className="inline">
           <Hand
             deckWithImages={deckWithImages}
+            hand={hand}
             handSize={handSize}
             onDrop={onDrop}
             onDragOver={onDragOver}
             onDragStart={onDragStart}
-            indexCounter={indexCounter}
-            setIndexCounter={setIndexCounter}
           />
         </div>
       )}
-      <Deck drawCard={drawCard} />
+      <Deck drawCard={drawCard} onDragStart={onDragStart} />
     </div>
   );
 };

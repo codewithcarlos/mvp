@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 
-const Card = ({ card, indexCounter, setIndexCounter, i, onDragStart }) => {
-  const [position, setPostion] = useState({ left: 8 + 150 * i, top: 570 });
-  // console.log("i", i);
+const Card = ({ card, onDragStart }) => {
+  // console.log("card rerendered", card.cardID);
   return (
     <div className="card" onDragStart={e => onDragStart(e)}>
       <div className="card-image-container">
@@ -10,11 +9,7 @@ const Card = ({ card, indexCounter, setIndexCounter, i, onDragStart }) => {
           src={card.imageUrl}
           alt={card.name}
           className="card-image"
-          id={i}
-          // onMouseDown={add}
-          // onMouseUp={remove}
-          // onDoubleClick={rotate}
-          // style={divStyle}
+          id={card.cardID}
         />
       </div>
     </div>
