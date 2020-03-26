@@ -164,14 +164,15 @@ const App = () => {
   };
 
   const onBattlegroundDrop = e => {
-    // console.log("on drop triggered");
-    if (!deckWithImages.length) return;
+    // console.log("on drop triggered", deckWithImages.length);
+    if (deckWithImages.length === undefined) return;
     if (e && e.dataTransfer) {
       // console.log("event target on drop is", e.dataTransfer);
       e.target.style.opacity = "1";
       let dataID = e.dataTransfer.getData("Text");
       // console.log("dataID", dataID);
       if (dataID === "deck-img") {
+        if (deckWithImages.length === 0) return;
         const updatedDeck = [...deckWithImages];
         const movedCard = updatedDeck.splice(0, 1);
         setCoordinates({
@@ -278,6 +279,48 @@ const App = () => {
     }
   };
 
+  const onDeckDrop = e => {
+    e.persist();
+    // console.log("onHandDrop triggered", e);
+    if (e && e.dataTransfer) {
+      let dataID = e.dataTransfer.getData("Text");
+      const targetId = e.target.id;
+      console.log("target card", targetId);
+      console.log("current card id", dataID);
+      let updatedHand = [...hand];
+      let updatedDeck = [...deckWithImages];
+
+      // check first if card is coming from hand
+      let currentCardIndex, movedCard;
+      hand.map((card, i) => {
+        if (card.cardID == dataID) {
+          movedCard = card;
+          currentCardIndex = i;
+        }
+      });
+
+      // if not from hand, then card comes from battleground
+      if (currentCardIndex === undefined) {
+        field.map((card, i) => {
+          if (card.cardID == dataID) {
+            movedCard = card;
+            currentCardIndex = i;
+          }
+        });
+        let updatedField = [...field];
+        updatedField.splice(currentCardIndex, 1);
+        updatedDeck.unshift(movedCard);
+        setField(updatedField);
+        setDeckWithImages(updatedDeck);
+        return;
+      }
+      updatedHand.splice(currentCardIndex, 1);
+      updatedDeck.unshift(movedCard);
+      setHand(updatedHand);
+      setDeckWithImages(updatedDeck);
+    }
+  };
+
   const handleDragEnd = e => {
     // console.log("handleDragEnd", e.target);
     e.target.style.opacity = "1";
@@ -304,7 +347,7 @@ const App = () => {
         onDragStart={onDragStart}
         onDragEnd={handleDragEnd}
       />
-      {deckWithImages.length > 0 && (
+      {deckWithImages.length >= 0 && (
         <div className="inline">
           <Hand
             deckWithImages={deckWithImages}
@@ -317,7 +360,13 @@ const App = () => {
           />
         </div>
       )}
-      <Deck drawCard={drawCard} onDragStart={onDragStart} />
+      <Deck
+        drawCard={drawCard}
+        onDragStart={onDragStart}
+        onDragOver={onDragOver}
+        onDrop={onDeckDrop}
+        onDragEnd={handleDragEnd}
+      />
     </div>
   );
 };
