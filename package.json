@@ -22,8 +22,11 @@
   "dependencies": {
     "@babel/core": "^7.8.4",
     "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-proposal-export-default-from": "^7.8.3",
+    "@babel/polyfill": "^7.8.7",
     "@babel/preset-env": "^7.8.4",
     "@babel/preset-react": "^7.8.3",
+    "@babel/runtime": "^7.9.2",
     "axios": "^0.19.2",
     "babel-loader": "^8.0.6",
     "cors": "^2.8.5",
@@ -33,16 +36,14 @@
     "mysql": "^2.18.1",
     "path": "^0.12.7",
     "react": "^16.13.0",
-    "react-beautiful-dnd": "^13.0.0",
     "react-dom": "^16.13.0",
-    "react-draggable": "^4.2.0",
-    "react-dropzone": "^10.2.1",
     "request": "^2.88.2",
     "styled-components": "^5.0.1",
     "webpack": "^4.41.6",
     "webpack-cli": "^3.3.11"
   },
   "devDependencies": {
+    "@babel/plugin-transform-runtime": "^7.9.0",
     "nodemon": "^2.0.2"
   }
 }

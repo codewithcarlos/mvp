@@ -7,17 +7,22 @@ import Commands from "./Commands";
 import Battleground from "./Battleground";
 
 const App = () => {
-  const [mainDeck, setMainDeck] = useState([""]);
-  const [sideboard, setSideboard] = useState([""]);
+  const [mainDeck, setMainDeck] = useState([]);
+  // const [sideboard, setSideboard] = useState([]);
   const [deckWithImages, setDeckWithImages] = useState({});
-  const [handSize, setHandSize] = useState(7);
+  const [handSize, setHandSize] = useState(0);
   const [hand, setHand] = useState({});
   const [field, setField] = useState([]);
-  const [coordinates, setCoordinates] = useState({});
+  const [coordinates, setCoordinates] = useState({ x: 0, y: 0 });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     shuffleDeck();
   }, []);
+
+  // useEffect(() => {
+
+  // }, [mainDeck])
 
   const shuffleDeck = () => {
     const deck = [];
@@ -47,7 +52,8 @@ const App = () => {
     const randomizedDeck = shuffle(mainDeck);
     // console.log('shuffled main deck is:', randomizedDeck);
     setMainDeck(randomizedDeck);
-    setSideboard(sideboard);
+    // setSideboard(sideboard);
+    return randomizedDeck;
   };
 
   const shuffle = array => {
@@ -95,7 +101,18 @@ const App = () => {
       });
   };
 
+  const newGame = () => {
+    const shuffledDeck = shuffle([...deckWithImages, ...field, ...hand]);
+    // console.log("shuffledDeck", shuffledDeck, shuffledDeck.length);
+    setCoordinates({});
+    setField([]);
+    setHandSize(7);
+    setHand(shuffledDeck.slice(0, 7));
+    setDeckWithImages(shuffledDeck.slice(7));
+  };
+
   const getCardImages = () => {
+    console.log("axios called");
     axios
       .get("/deck", {
         params: {
@@ -103,12 +120,15 @@ const App = () => {
         }
       })
       .then(({ data }) => {
+        // setCoordinates({});
+        // setField([]);
         console.log("getCardImages", data);
         for (let i = 0; i < data.length; i++) {
           data[i]["cardID"] = i;
         }
-        setHand(data.slice(0, handSize));
-        setDeckWithImages(data.slice(handSize));
+        setHandSize(7);
+        setHand(data.slice(0, 7));
+        setDeckWithImages(data.slice(7));
       })
       .catch(err => {
         console.log("error", err);
@@ -125,25 +145,35 @@ const App = () => {
   };
 
   const onDragOver = e => {
-    if (e) e.preventDefault();
+    e.preventDefault();
+    e.stopPropagation();
+    // console.log("dragover", e.target.style.opacity);
+    // e.target.style.opacity = "1";
   };
 
   const onDragStart = e => {
     e.persist();
-    console.log("onDragStart", e.target.id, e);
-    console.log(deckWithImages.length);
-    if (e.dataTransfer) e.dataTransfer.setData("Text", e.target.id);
+    if (e.dataTransfer) {
+      if (e.target.id !== "deck-img") e.target.style.opacity = "0";
+      if (e.target.className === "card-image rotated") {
+        e.target.style.opacity = "1";
+        event.dataTransfer.setDragImage(e.target, 0, 50);
+      }
+      e.dataTransfer.setData("Text", e.target.id);
+    }
   };
 
-  const onDrop = e => {
+  const onBattlegroundDrop = e => {
+    // console.log("on drop triggered");
     if (!deckWithImages.length) return;
     if (e && e.dataTransfer) {
+      // console.log("event target on drop is", e.dataTransfer);
+      e.target.style.opacity = "1";
       let dataID = e.dataTransfer.getData("Text");
-
+      // console.log("dataID", dataID);
       if (dataID === "deck-img") {
         const updatedDeck = [...deckWithImages];
         const movedCard = updatedDeck.splice(0, 1);
-        console.log("triggered", movedCard);
         setCoordinates({
           ...coordinates,
           [movedCard[0].cardID]: { x: e.pageX - 150, y: e.pageY - 80 }
@@ -153,22 +183,104 @@ const App = () => {
         return;
       }
 
-      dataID = parseInt(dataID);
-      // console.log("ondrop triggered", e.dataTransfer.getData("Text"));
-      const movedCard = hand.find(card => card.cardID === dataID);
-      // console.log("moved card is", movedCard);
-      const updatedHand = hand.filter(card => card.cardID !== movedCard.cardID);
+      let movedCard = hand.find(card => card.cardID == dataID);
+      if (!movedCard) {
+        movedCard = field.find(card => card.cardID == dataID);
+        setCoordinates({
+          ...coordinates,
+          [dataID]: { x: e.pageX - 130, y: e.pageY - 90 }
+        });
+        return;
+      }
 
+      const updatedHand = hand.filter(card => card.cardID !== movedCard.cardID);
       setCoordinates({
         ...coordinates,
-        [dataID]: { x: e.pageX - 150, y: e.pageY - 160 }
+        [dataID]: { x: e.pageX - 130, y: e.pageY - 90 }
       });
-      // setDeckWithImages(updatedDeck);
       setHand(updatedHand);
       setField([...field, movedCard]);
       setHandSize(handSize - 1);
       e.preventDefault();
     }
+  };
+
+  const onHandDrop = e => {
+    // e.persist();
+    // console.log("onHandDrop triggered", e);
+    // console.log("target card", e.target.id);
+    if (!deckWithImages.length) return;
+    if (e && e.dataTransfer) {
+      let dataID = e.dataTransfer.getData("Text");
+      const targetId = e.target.id;
+      // console.log("dataID", dataID);
+      let updatedHand = [...hand];
+      let currentCardIndex, targetCardIndex, movedCard;
+
+      if (dataID === "deck-img") {
+        // console.log("targetId", targetId === "");
+        if (targetId === "") {
+          drawCard();
+          return;
+        }
+        const updatedDeck = [...deckWithImages];
+        movedCard = updatedDeck.splice(0, 1);
+        hand.map((card, i) => {
+          if (card.cardID == targetId) targetCardIndex = i;
+        });
+        updatedHand.splice(targetCardIndex, 0, ...movedCard);
+        setHand(updatedHand);
+        setHandSize(handSize + 1);
+        setDeckWithImages(updatedDeck);
+        return;
+      }
+
+      // dataID = parseInt(dataID);
+      // if (targetId === "") return;
+
+      hand.map((card, i) => {
+        // console.log("handmap", i, targetId, card.cardID);
+        if (card.cardID == dataID) {
+          movedCard = card;
+          currentCardIndex = i;
+        }
+        if (card.cardID == targetId && targetId !== "") {
+          targetCardIndex = i;
+        }
+      });
+      // console.log("currentCardIndex", currentCardIndex);
+      // console.log("targetCardIndex", targetCardIndex);
+      if (currentCardIndex === undefined) {
+        field.map((card, i) => {
+          if (card.cardID == dataID) {
+            movedCard = card;
+            currentCardIndex = i;
+          }
+          if (card.cardID == targetId && targetId !== "") {
+            targetCardIndex = i;
+          }
+          // console.log("fieldmap", i, targetId, card.cardID);
+        });
+        let updatedField = [...field];
+        updatedField.splice(currentCardIndex, 1);
+        updatedHand.splice(targetCardIndex, 0, movedCard);
+        // console.log("updatedField", updatedField);
+        // console.log("updatedHand", updatedHand);
+        setField(updatedField);
+        setHand(updatedHand);
+        setHandSize(handSize + 1);
+        return;
+      }
+      updatedHand.splice(currentCardIndex, 1);
+      updatedHand.splice(targetCardIndex, 0, movedCard);
+      // console.log("the updated hand is", updatedHand);
+      setHand(updatedHand);
+    }
+  };
+
+  const handleDragEnd = e => {
+    // console.log("handleDragEnd", e.target);
+    e.target.style.opacity = "1";
   };
 
   return (
@@ -182,12 +294,15 @@ const App = () => {
         findCardByName={findCardByName}
         getCardImages={getCardImages}
         drawCard={drawCard}
+        newGame={newGame}
       />
       <Battleground
-        onDrop={onDrop}
+        onDrop={onBattlegroundDrop}
         onDragOver={onDragOver}
         field={field}
         coordinates={coordinates}
+        onDragStart={onDragStart}
+        onDragEnd={handleDragEnd}
       />
       {deckWithImages.length > 0 && (
         <div className="inline">
@@ -195,9 +310,10 @@ const App = () => {
             deckWithImages={deckWithImages}
             hand={hand}
             handSize={handSize}
-            onDrop={onDrop}
             onDragOver={onDragOver}
             onDragStart={onDragStart}
+            onDrop={onHandDrop}
+            onDragEnd={handleDragEnd}
           />
         </div>
       )}

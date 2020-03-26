@@ -1,6 +1,6 @@
 import React from "react";
 
-const Card = ({ card, onDragStart }) => {
+const Card = ({ card, onDragStart, i }) => {
   // console.log("card rerendered", card.cardID);
   return (
     <div className="card" onDragStart={e => onDragStart(e)}>

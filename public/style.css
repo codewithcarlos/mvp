@@ -1,10 +1,5 @@
-#battleground .card-image {
-  user-drag: none;
-  user-select: none;
-  -moz-user-select: none;
-  -webkit-user-drag: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
+#battleground:-moz-drag-over {
+  outline: 1px solid red;
 }
 
 .card-image {
@@ -23,9 +18,12 @@
 
 .hand {
   display: flex;
-  width: 75vw;
+  width: 77vw;
   margin: 0 -0.5%;
   overflow: auto;
+  border: 1px solid #ccc;
+  padding: 10px;
+  height: 220px;
 }
 
 .rotated {
@@ -96,6 +94,9 @@ body {
 #deck {
   display: inline-block;
   float: right;
+  border: 1px solid #ccc;
+  padding: 10px;
+  height: 220px;
 }
 
 .inline {

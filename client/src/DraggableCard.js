@@ -1,86 +1,64 @@
-import React from "react";
-import Draggable from "react-draggable";
+import React, { useState } from "react";
 
-class DraggableCard extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      activeDrags: 0,
-      deltaPosition: {
-        x: 0,
-        y: 0
-      },
-      isRotated: false,
-      counter: 0
-    };
-    this.handleDrag = this.handleDrag.bind(this);
-    this.onStart = this.onStart.bind(this);
-    this.onStop = this.onStop.bind(this);
-    this.rotate = this.rotate.bind(this);
+const DraggableCard1 = ({
+  card,
+  indexCounter,
+  setIndexCounter,
+  coordinates,
+  onDragStart
+}) => {
+  const [counter, setCounter] = useState(0);
+  const [isRotated, setIsRotated] = useState(false);
+  // console.log("draggablecard rerendered", card.cardID);
+
+  const rotate = () => {
+    setIsRotated(!isRotated);
+  };
+
+  const onStart = () => {
+    const newCounter = indexCounter + 1;
+    setIndexCounter(newCounter);
+    setCounter(newCounter);
+  };
+
+  // const { card, i, coordinates } = this.props;
+  let x, y;
+  if (coordinates[card.cardID]) {
+    x = coordinates[card.cardID].x;
+    y = coordinates[card.cardID].y;
+  } else {
+    x = 0;
+    y = 0;
   }
+  // let { x, y } = coordinates[card.cardID];
+  return (
+    <div
+      className="card"
+      onMouseDown={onStart}
+      onDragStart={e => {
+        // onStart();
+        onDragStart(e);
+      }}
+    >
+      <div
+        className="card-image-container"
+        style={{
+          zIndex: counter,
+          left: x || 0,
+          top: y || 0,
+          position: "absolute"
+        }}
+      >
+        <img
+          src={card.imageUrl}
+          alt={card.name}
+          className={isRotated ? "card-image rotated" : "card-image"}
+          onDoubleClick={rotate}
+          id={card.cardID}
+        />
+      </div>
+    </div>
+  );
+};
 
-  handleDrag(e, ui) {
-    const { x, y } = this.state.deltaPosition;
-    this.setState({
-      deltaPosition: {
-        x: x + ui.deltaX,
-        y: y + ui.deltaY
-      }
-    });
-  }
-
-  onStart(e) {
-    console.log("onstart");
-    let newCounter = this.props.indexCounter + 1;
-    this.props.setIndexCounter(newCounter);
-    this.setState({
-      counter: newCounter
-      // activeDrags: this.state.activeDrags + 1
-    });
-  }
-
-  onStop() {
-    // this.setState({ activeDrags: this.state.activeDrags - 1 });
-  }
-
-  rotate() {
-    let isRotated = !this.state.isRotated;
-    this.setState({ isRotated });
-  }
-
-  render() {
-    // console.log("draggable card rerendered");
-    const dragHandlers = { onStart: this.onStart, onStop: this.onStop };
-    // const { deltaPosition } = this.state;
-    // console.log("deltaPosition", deltaPosition);
-
-    const { card, i, coordinates } = this.props;
-    const { x, y } = coordinates[card.cardID];
-
-    return (
-      <Draggable bounds="parent" onDrag={this.handleDrag} {...dragHandlers}>
-        <div
-          className="card-image-container"
-          style={{
-            zIndex: this.state.counter,
-            left: x,
-            top: y,
-            position: "absolute"
-          }}
-        >
-          <img
-            src={card.imageUrl}
-            alt={card.name}
-            className={
-              this.state.isRotated ? "card-image rotated" : "card-image"
-            }
-            onDoubleClick={this.rotate}
-            id={i}
-          />
-        </div>
-      </Draggable>
-    );
-  }
-}
-
-export default DraggableCard;
+export default DraggableCard1;
