@@ -5,24 +5,23 @@ import Hand from "./Hand";
 import axios from "axios";
 import Commands from "./Commands";
 import Battleground from "./Battleground";
+import Graveyard from "./Graveyard";
+import Exiled from "./Exiled";
 
 const App = () => {
   const [mainDeck, setMainDeck] = useState([]);
   // const [sideboard, setSideboard] = useState([]);
   const [deckWithImages, setDeckWithImages] = useState({});
   const [handSize, setHandSize] = useState(0);
-  const [hand, setHand] = useState({});
+  const [hand, setHand] = useState([]);
   const [field, setField] = useState([]);
   const [coordinates, setCoordinates] = useState({ x: 0, y: 0 });
-  const [loading, setLoading] = useState(false);
+  const [graveyard, setGraveyard] = useState([]);
+  const [exiled, setExiled] = useState([]);
 
   useEffect(() => {
     shuffleDeck();
   }, []);
-
-  // useEffect(() => {
-
-  // }, [mainDeck])
 
   const shuffleDeck = () => {
     const deck = [];
@@ -57,6 +56,7 @@ const App = () => {
   };
 
   const shuffle = array => {
+    if (!array.length) return;
     let currentIndex = array.length,
       temporaryValue,
       randomIndex;
@@ -72,7 +72,7 @@ const App = () => {
       array[currentIndex] = array[randomIndex];
       array[randomIndex] = temporaryValue;
     }
-
+    if (deckWithImages.length !== undefined) setDeckWithImages(array);
     return array;
   };
 
@@ -102,6 +102,10 @@ const App = () => {
   };
 
   const newGame = () => {
+    if (deckWithImages.length === undefined) {
+      getCardImages();
+      return;
+    }
     const shuffledDeck = shuffle([...deckWithImages, ...field, ...hand]);
     // console.log("shuffledDeck", shuffledDeck, shuffledDeck.length);
     setCoordinates({});
@@ -120,8 +124,6 @@ const App = () => {
         }
       })
       .then(({ data }) => {
-        // setCoordinates({});
-        // setField([]);
         console.log("getCardImages", data);
         for (let i = 0; i < data.length; i++) {
           data[i]["cardID"] = i;
@@ -136,7 +138,8 @@ const App = () => {
   };
 
   const drawCard = () => {
-    if (deckWithImages.length === 0) return;
+    if (deckWithImages.length === undefined || deckWithImages.length === 0)
+      return;
     const updatedDeck = [...deckWithImages];
     const movedCard = updatedDeck.splice(0, 1);
     setHand([...hand, ...movedCard]);
@@ -146,227 +149,411 @@ const App = () => {
 
   const onDragOver = e => {
     e.preventDefault();
-    e.stopPropagation();
-    // console.log("dragover", e.target.style.opacity);
-    // e.target.style.opacity = "1";
+    // e.stopPropagation();
   };
 
-  const onDragStart = e => {
+  const onDragStart = (e, zone) => {
+    console.log("zone is", zone);
     e.persist();
     if (e.dataTransfer) {
-      if (e.target.id !== "deck-img") e.target.style.opacity = "0";
-      if (e.target.className === "card-image rotated") {
-        e.target.style.opacity = "1";
-        event.dataTransfer.setDragImage(e.target, 0, 50);
-      }
-      e.dataTransfer.setData("Text", e.target.id);
+      if (e.target.id !== "deck-img") e.target.style.opacity = "0.2";
+      event.dataTransfer.setDragImage(e.target, 61, 85);
+      e.dataTransfer.setData("Text", `${zone}-${e.target.id}`);
     }
   };
 
   const onBattlegroundDrop = e => {
-    // console.log("on drop triggered", deckWithImages.length);
     if (deckWithImages.length === undefined) return;
     if (e && e.dataTransfer) {
       // console.log("event target on drop is", e.dataTransfer);
       e.target.style.opacity = "1";
-      let dataID = e.dataTransfer.getData("Text");
+      let dataID = e.dataTransfer.getData("Text").split("-");
+      const zone = dataID[0];
+      dataID = dataID[1];
       // console.log("dataID", dataID);
-      if (dataID === "deck-img") {
-        if (deckWithImages.length === 0) return;
-        const updatedDeck = [...deckWithImages];
-        const movedCard = updatedDeck.splice(0, 1);
-        setCoordinates({
-          ...coordinates,
-          [movedCard[0].cardID]: { x: e.pageX - 150, y: e.pageY - 80 }
-        });
-        setField([...field, ...movedCard]);
-        setDeckWithImages(updatedDeck);
-        return;
+      console.log("onBattlegroundDrop", zone);
+      switch (zone) {
+        case "deck":
+          if (deckWithImages.length === 0) return;
+          const updatedDeck = [...deckWithImages];
+          let movedCard = updatedDeck.splice(0, 1);
+          setCoordinates({
+            ...coordinates,
+            [movedCard[0].cardID]: { x: e.pageX - 70, y: e.pageY - 105 }
+          });
+          setField([...field, ...movedCard]);
+          setDeckWithImages(updatedDeck);
+          break;
+
+        case "hand":
+          movedCard = hand.find(card => card.cardID == dataID);
+          const updatedHand = hand.filter(
+            card => card.cardID !== movedCard.cardID
+          );
+          setCoordinates({
+            ...coordinates,
+            [dataID]: { x: e.pageX - 70, y: e.pageY - 105 }
+          });
+          setHand(updatedHand);
+          setField([...field, movedCard]);
+          setHandSize(handSize - 1);
+          break;
+
+        case "field":
+          movedCard = field.find(card => card.cardID == dataID);
+          setCoordinates({
+            ...coordinates,
+            [dataID]: { x: e.pageX - 70, y: e.pageY - 105 }
+          });
+          break;
+
+        default:
+          break;
       }
 
-      let movedCard = hand.find(card => card.cardID == dataID);
-      if (!movedCard) {
-        movedCard = field.find(card => card.cardID == dataID);
-        setCoordinates({
-          ...coordinates,
-          [dataID]: { x: e.pageX - 130, y: e.pageY - 90 }
-        });
-        return;
-      }
-
-      const updatedHand = hand.filter(card => card.cardID !== movedCard.cardID);
-      setCoordinates({
-        ...coordinates,
-        [dataID]: { x: e.pageX - 130, y: e.pageY - 90 }
-      });
-      setHand(updatedHand);
-      setField([...field, movedCard]);
-      setHandSize(handSize - 1);
       e.preventDefault();
     }
   };
 
   const onHandDrop = e => {
-    // e.persist();
-    // console.log("onHandDrop triggered", e);
-    // console.log("target card", e.target.id);
     if (!deckWithImages.length) return;
     if (e && e.dataTransfer) {
-      let dataID = e.dataTransfer.getData("Text");
+      let dataID = e.dataTransfer.getData("Text").split("-");
+      const zone = dataID[0];
+      dataID = dataID[1];
       const targetId = e.target.id;
       // console.log("dataID", dataID);
       let updatedHand = [...hand];
       let currentCardIndex, targetCardIndex, movedCard;
 
-      if (dataID === "deck-img") {
-        // console.log("targetId", targetId === "");
-        if (targetId === "") {
-          drawCard();
-          return;
-        }
-        const updatedDeck = [...deckWithImages];
-        movedCard = updatedDeck.splice(0, 1);
-        hand.map((card, i) => {
-          if (card.cardID == targetId) targetCardIndex = i;
-        });
-        updatedHand.splice(targetCardIndex, 0, ...movedCard);
-        setHand(updatedHand);
-        setHandSize(handSize + 1);
-        setDeckWithImages(updatedDeck);
-        return;
-      }
-
-      // dataID = parseInt(dataID);
-      // if (targetId === "") return;
-
-      hand.map((card, i) => {
-        // console.log("handmap", i, targetId, card.cardID);
-        if (card.cardID == dataID) {
-          movedCard = card;
-          currentCardIndex = i;
-        }
-        if (card.cardID == targetId && targetId !== "") {
-          targetCardIndex = i;
-        }
-      });
-      // console.log("currentCardIndex", currentCardIndex);
-      // console.log("targetCardIndex", targetCardIndex);
-      if (currentCardIndex === undefined) {
-        field.map((card, i) => {
-          if (card.cardID == dataID) {
-            movedCard = card;
-            currentCardIndex = i;
+      switch (zone) {
+        case "deck":
+          if (targetId === "") {
+            drawCard();
+            return;
           }
-          if (card.cardID == targetId && targetId !== "") {
-            targetCardIndex = i;
-          }
-          // console.log("fieldmap", i, targetId, card.cardID);
-        });
-        let updatedField = [...field];
-        updatedField.splice(currentCardIndex, 1);
-        updatedHand.splice(targetCardIndex, 0, movedCard);
-        // console.log("updatedField", updatedField);
-        // console.log("updatedHand", updatedHand);
-        setField(updatedField);
-        setHand(updatedHand);
-        setHandSize(handSize + 1);
-        return;
+          const updatedDeck = [...deckWithImages];
+          movedCard = updatedDeck.splice(0, 1);
+          hand.map((card, i) => {
+            if (card.cardID == targetId) targetCardIndex = i;
+          });
+          updatedHand.splice(targetCardIndex, 0, ...movedCard);
+          setHand(updatedHand);
+          setHandSize(handSize + 1);
+          setDeckWithImages(updatedDeck);
+          break;
+
+        case "hand":
+          hand.map((card, i) => {
+            if (card.cardID == dataID) {
+              movedCard = card;
+              currentCardIndex = i;
+            }
+            if (card.cardID == targetId && targetId !== "") {
+              targetCardIndex = i;
+            }
+          });
+          updatedHand.splice(currentCardIndex, 1);
+          updatedHand.splice(targetCardIndex, 0, movedCard);
+          setHand(updatedHand);
+          break;
+
+        case "field":
+          field.map((card, i) => {
+            if (card.cardID == dataID) {
+              movedCard = card;
+              currentCardIndex = i;
+            }
+          });
+          hand.map((card, i) => {
+            if (card.cardID == targetId && targetId !== "") {
+              targetCardIndex = i;
+            }
+          });
+
+          let updatedField = [...field];
+          updatedField.splice(currentCardIndex, 1);
+          updatedHand.splice(targetCardIndex, 0, movedCard);
+          setField(updatedField);
+          setHand(updatedHand);
+          setHandSize(handSize + 1);
+          break;
+
+        case "graveyard":
+          const updatedGraveyard = [...graveyard];
+          movedCard = updatedGraveyard.shift();
+          hand.map((card, i) => {
+            if (card.cardID == targetId && targetId !== "") {
+              targetCardIndex = i;
+            }
+          });
+          updatedHand.splice(targetCardIndex, 0, movedCard);
+          setGraveyard(updatedGraveyard);
+          setHand(updatedHand);
+          setHandSize(handSize + 1);
+          break;
+
+        case "exiled":
+          const updatedExiled = [...exiled];
+          movedCard = updatedExiled.shift();
+          hand.map((card, i) => {
+            if (card.cardID == targetId && targetId !== "") {
+              targetCardIndex = i;
+            }
+          });
+          updatedHand.splice(targetCardIndex, 0, movedCard);
+          setExiled(updatedExiled);
+          setHand(updatedHand);
+          setHandSize(handSize + 1);
+          break;
+
+        default:
+          break;
       }
-      updatedHand.splice(currentCardIndex, 1);
-      updatedHand.splice(targetCardIndex, 0, movedCard);
-      // console.log("the updated hand is", updatedHand);
-      setHand(updatedHand);
     }
   };
 
   const onDeckDrop = e => {
     e.persist();
-    // console.log("onHandDrop triggered", e);
     if (e && e.dataTransfer) {
-      let dataID = e.dataTransfer.getData("Text");
-      const targetId = e.target.id;
-      console.log("target card", targetId);
-      console.log("current card id", dataID);
-      let updatedHand = [...hand];
+      let dataID = e.dataTransfer.getData("Text").split("-");
+      const zone = dataID[0];
+      dataID = dataID[1];
       let updatedDeck = [...deckWithImages];
 
-      // check first if card is coming from hand
       let currentCardIndex, movedCard;
-      hand.map((card, i) => {
-        if (card.cardID == dataID) {
-          movedCard = card;
-          currentCardIndex = i;
-        }
-      });
+      console.log("onDeckDrop", zone);
+      switch (zone) {
+        case "hand":
+          let updatedHand = [...hand];
+          hand.map((card, i) => {
+            if (card.cardID == dataID) {
+              movedCard = card;
+              currentCardIndex = i;
+            }
+          });
+          updatedHand.splice(currentCardIndex, 1);
+          updatedDeck.unshift(movedCard);
+          setHand(updatedHand);
+          setDeckWithImages(updatedDeck);
+          break;
 
-      // if not from hand, then card comes from battleground
-      if (currentCardIndex === undefined) {
-        field.map((card, i) => {
-          if (card.cardID == dataID) {
-            movedCard = card;
-            currentCardIndex = i;
-          }
-        });
-        let updatedField = [...field];
-        updatedField.splice(currentCardIndex, 1);
-        updatedDeck.unshift(movedCard);
-        setField(updatedField);
-        setDeckWithImages(updatedDeck);
-        return;
+        case "field":
+          field.map((card, i) => {
+            if (card.cardID == dataID) {
+              movedCard = card;
+              currentCardIndex = i;
+            }
+          });
+          let updatedField = [...field];
+          updatedField.splice(currentCardIndex, 1);
+          updatedDeck.unshift(movedCard);
+          setField(updatedField);
+          setDeckWithImages(updatedDeck);
+          break;
+
+        case "graveyard":
+          const updatedGraveyard = [...graveyard];
+          movedCard = updatedGraveyard.shift();
+          updatedDeck.unshift(movedCard);
+          setGraveyard(updatedGraveyard);
+          setDeckWithImages(updatedDeck);
+          break;
+
+        case "exiled":
+          const updatedExiled = [...exiled];
+          movedCard = updatedExiled.shift();
+          updatedDeck.unshift(movedCard);
+          setExiled(updatedExiled);
+          setDeckWithImages(updatedDeck);
+          break;
+
+        default:
+          break;
       }
-      updatedHand.splice(currentCardIndex, 1);
-      updatedDeck.unshift(movedCard);
-      setHand(updatedHand);
-      setDeckWithImages(updatedDeck);
     }
   };
 
-  const handleDragEnd = e => {
-    // console.log("handleDragEnd", e.target);
+  const onGraveyardDrop = e => {
+    if (e && e.dataTransfer) {
+      let dataID = e.dataTransfer.getData("Text").split("-");
+      const zone = dataID[0];
+      dataID = dataID[1];
+      let updatedGraveyard = [...graveyard];
+
+      let currentCardIndex, movedCard;
+      console.log("onGraveyardDrop", zone);
+      switch (zone) {
+        case "hand":
+          let updatedHand = [...hand];
+          hand.map((card, i) => {
+            if (card.cardID == dataID) {
+              movedCard = card;
+              currentCardIndex = i;
+            }
+          });
+          updatedHand.splice(currentCardIndex, 1);
+          updatedGraveyard.unshift(movedCard);
+          console.log("moved card and update gy", movedCard, updatedGraveyard);
+          setHand(updatedHand);
+          setGraveyard(updatedGraveyard);
+          break;
+
+        case "field":
+          field.map((card, i) => {
+            if (card.cardID == dataID) {
+              movedCard = card;
+              currentCardIndex = i;
+            }
+          });
+          let updatedField = [...field];
+          updatedField.splice(currentCardIndex, 1);
+          updatedGraveyard.unshift(movedCard);
+          setField(updatedField);
+          setGraveyard(updatedGraveyard);
+          break;
+
+        case "deck":
+          const updatedDeck = [...deckWithImages];
+          movedCard = updatedDeck.splice(0, 1);
+          updatedGraveyard.unshift(movedCard[0]);
+          setDeckWithImages(updatedDeck);
+          setGraveyard(updatedGraveyard);
+          break;
+
+        case "exiled":
+          const updatedExiled = [...exiled];
+          movedCard = updatedExiled.shift();
+          updatedGraveyard.unshift(movedCard);
+          setExiled(updatedExiled);
+          setGraveyard(updatedGraveyard);
+          break;
+
+        default:
+          break;
+      }
+    }
+  };
+  const onExiledDrop = e => {
+    if (e && e.dataTransfer) {
+      let dataID = e.dataTransfer.getData("Text").split("-");
+      const zone = dataID[0];
+      dataID = dataID[1];
+      let updatedExiled = [...exiled];
+
+      let currentCardIndex, movedCard;
+      console.log("onExiledDrop", zone);
+      switch (zone) {
+        case "hand":
+          let updatedHand = [...hand];
+          hand.map((card, i) => {
+            if (card.cardID == dataID) {
+              movedCard = card;
+              currentCardIndex = i;
+            }
+          });
+          updatedHand.splice(currentCardIndex, 1);
+          updatedExiled.unshift(movedCard);
+          // console.log("moved card and update exiled", movedCard, updatedExiled);
+          setHand(updatedHand);
+          setExiled(updatedExiled);
+          break;
+
+        case "field":
+          field.map((card, i) => {
+            if (card.cardID == dataID) {
+              movedCard = card;
+              currentCardIndex = i;
+            }
+          });
+          let updatedField = [...field];
+          updatedField.splice(currentCardIndex, 1);
+          updatedExiled.unshift(movedCard);
+          setField(updatedField);
+          setExiled(updatedExiled);
+          break;
+
+        case "deck":
+          const updatedDeck = [...deckWithImages];
+          movedCard = updatedDeck.splice(0, 1);
+          updatedExiled.unshift(movedCard[0]);
+          setDeckWithImages(updatedDeck);
+          setExiled(updatedExiled);
+          break;
+
+        case "graveyard":
+          const updatedGraveyard = [...graveyard];
+          movedCard = updatedGraveyard.shift();
+          updatedExiled.unshift(movedCard);
+          setGraveyard(updatedGraveyard);
+          setExiled(updatedExiled);
+          break;
+
+        default:
+          break;
+      }
+    }
+  };
+
+  const onDragEnd = e => {
+    // console.log("onDragEnd", e.target);
     e.target.style.opacity = "1";
   };
 
   return (
-    <div className="App">
-      {/* <img
-        src="https://starlightrunner.com/wp-content/uploads/2019/09/Magic-The-Gathering-logo-800x279.png"
-        className="mtg-logo"
-      /> */}
+    <div className="app">
       <Commands
-        shuffleDeck={shuffleDeck}
+        shuffle={shuffle}
         findCardByName={findCardByName}
         getCardImages={getCardImages}
         drawCard={drawCard}
         newGame={newGame}
+        deck={deckWithImages}
       />
       <Battleground
-        onDrop={onBattlegroundDrop}
-        onDragOver={onDragOver}
         field={field}
         coordinates={coordinates}
+        onDragOver={onDragOver}
         onDragStart={onDragStart}
-        onDragEnd={handleDragEnd}
+        onDragEnd={onDragEnd}
+        onDrop={onBattlegroundDrop}
       />
       {deckWithImages.length >= 0 && (
-        <div className="inline">
+        <div className="container-flex">
           <Hand
             deckWithImages={deckWithImages}
             hand={hand}
             handSize={handSize}
             onDragOver={onDragOver}
             onDragStart={onDragStart}
+            onDragEnd={onDragEnd}
             onDrop={onHandDrop}
-            onDragEnd={handleDragEnd}
           />
+          <div className="zones">
+            <Deck
+              drawCard={drawCard}
+              onDragStart={onDragStart}
+              onDragOver={onDragOver}
+              onDragEnd={onDragEnd}
+              onDrop={onDeckDrop}
+            />
+            <Graveyard
+              onDragStart={onDragStart}
+              onDragOver={onDragOver}
+              onDragEnd={onDragEnd}
+              onDrop={onGraveyardDrop}
+              graveyard={graveyard}
+            />
+            <Exiled
+              onDragStart={onDragStart}
+              onDragOver={onDragOver}
+              onDragEnd={onDragEnd}
+              onDrop={onExiledDrop}
+              exiled={exiled}
+            />
+          </div>
         </div>
       )}
-      <Deck
-        drawCard={drawCard}
-        onDragStart={onDragStart}
-        onDragOver={onDragOver}
-        onDrop={onDeckDrop}
-        onDragEnd={handleDragEnd}
-      />
     </div>
   );
 };

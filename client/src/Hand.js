@@ -1,7 +1,14 @@
 import React from "react";
 import Card from "./Card";
 
-const Hand = ({ hand, handSize, onDragStart, onDrop, onDragOver, onDragEnd }) => {
+const Hand = ({
+  hand,
+  handSize,
+  onDragStart,
+  onDrop,
+  onDragOver,
+  onDragEnd
+}) => {
   // console.log("hand rerendered", hand);
   return (
     <div
@@ -17,7 +24,7 @@ const Hand = ({ hand, handSize, onDragStart, onDrop, onDragOver, onDragEnd }) =>
               card={card}
               key={i}
               i={i}
-              onDragStart={onDragStart}
+              onDragStart={e => onDragStart(e, "hand")}
               onDrop={onDrop}
             />
           )

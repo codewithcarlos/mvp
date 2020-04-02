@@ -5,7 +5,7 @@ const Deck = ({ drawCard, onDragStart, onDrop, onDragOver, onDragEnd }) => {
     <div
       id="deck"
       onClick={() => drawCard()}
-      onDragStart={e => onDragStart(e)}
+      onDragStart={e => onDragStart(e, 'deck')}
       onDrop={e => onDrop(e)}
       onDragOver={e => onDragOver(e)}
       onDragEnd={e => onDragEnd(e)}

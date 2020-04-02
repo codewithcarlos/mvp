@@ -35,10 +35,7 @@ const DraggableCard1 = ({
     <div
       className="card"
       onMouseDown={onStart}
-      onDragStart={e => {
-        // onStart();
-        onDragStart(e);
-      }}
+      onDragStart={e => onDragStart(e, "field")}
     >
       <div
         className="card-image-container"
