@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import mockDeck from "./mockDeck";
 import Deck from "./Deck";
 import Hand from "./Hand";
@@ -55,7 +55,7 @@ const App = () => {
     return randomizedDeck;
   };
 
-  const shuffle = array => {
+  const shuffle = (array) => {
     if (!array.length) return;
     let currentIndex = array.length,
       temporaryValue,
@@ -96,7 +96,7 @@ const App = () => {
         console.log("findCardByName", data);
         const { name, imageUrl, multiverseid } = data;
       })
-      .catch(err => {
+      .catch((err) => {
         console.log("error", err);
       });
   };
@@ -120,8 +120,8 @@ const App = () => {
     axios
       .get("/deck", {
         params: {
-          mainDeck
-        }
+          mainDeck,
+        },
       })
       .then(({ data }) => {
         console.log("getCardImages", data);
@@ -132,7 +132,7 @@ const App = () => {
         setHand(data.slice(0, 7));
         setDeckWithImages(data.slice(7));
       })
-      .catch(err => {
+      .catch((err) => {
         console.log("error", err);
       });
   };
@@ -147,7 +147,7 @@ const App = () => {
     setHandSize(handSize + 1);
   };
 
-  const onDragOver = e => {
+  const onDragOver = (e) => {
     e.preventDefault();
     // e.stopPropagation();
   };
@@ -162,15 +162,13 @@ const App = () => {
     }
   };
 
-  const onBattlegroundDrop = e => {
+  const onBattlegroundDrop = (e) => {
     if (deckWithImages.length === undefined) return;
     if (e && e.dataTransfer) {
-      // console.log("event target on drop is", e.dataTransfer);
       e.target.style.opacity = "1";
       let dataID = e.dataTransfer.getData("Text").split("-");
       const zone = dataID[0];
       dataID = dataID[1];
-      // console.log("dataID", dataID);
       console.log("onBattlegroundDrop", zone);
       switch (zone) {
         case "deck":
@@ -179,20 +177,20 @@ const App = () => {
           let movedCard = updatedDeck.splice(0, 1);
           setCoordinates({
             ...coordinates,
-            [movedCard[0].cardID]: { x: e.pageX - 70, y: e.pageY - 105 }
+            [movedCard[0].cardID]: { x: e.pageX - 70, y: e.pageY - 105 },
           });
           setField([...field, ...movedCard]);
           setDeckWithImages(updatedDeck);
           break;
 
         case "hand":
-          movedCard = hand.find(card => card.cardID == dataID);
+          movedCard = hand.find((card) => card.cardID == dataID);
           const updatedHand = hand.filter(
-            card => card.cardID !== movedCard.cardID
+            (card) => card.cardID !== movedCard.cardID
           );
           setCoordinates({
             ...coordinates,
-            [dataID]: { x: e.pageX - 70, y: e.pageY - 105 }
+            [dataID]: { x: e.pageX - 70, y: e.pageY - 105 },
           });
           setHand(updatedHand);
           setField([...field, movedCard]);
@@ -200,11 +198,33 @@ const App = () => {
           break;
 
         case "field":
-          movedCard = field.find(card => card.cardID == dataID);
+          movedCard = field.find((card) => card.cardID == dataID);
           setCoordinates({
             ...coordinates,
-            [dataID]: { x: e.pageX - 70, y: e.pageY - 105 }
+            [dataID]: { x: e.pageX - 70, y: e.pageY - 105 },
           });
+          break;
+
+        case "graveyard":
+          const updatedGraveyard = [...graveyard];
+          movedCard = updatedGraveyard.shift();
+          setCoordinates({
+            ...coordinates,
+            [dataID]: { x: e.pageX - 70, y: e.pageY - 105 },
+          });
+          setGraveyard(updatedGraveyard);
+          setField([...field, movedCard]);
+          break;
+
+        case "exiled":
+          const updatedExiled = [...exiled];
+          movedCard = updatedExiled.shift();
+          setCoordinates({
+            ...coordinates,
+            [dataID]: { x: e.pageX - 70, y: e.pageY - 105 },
+          });
+          setExiled(updatedExiled);
+          setField([...field, movedCard]);
           break;
 
         default:
@@ -215,7 +235,7 @@ const App = () => {
     }
   };
 
-  const onHandDrop = e => {
+  const onHandDrop = (e) => {
     if (!deckWithImages.length) return;
     if (e && e.dataTransfer) {
       let dataID = e.dataTransfer.getData("Text").split("-");
@@ -313,7 +333,7 @@ const App = () => {
     }
   };
 
-  const onDeckDrop = e => {
+  const onDeckDrop = (e) => {
     e.persist();
     if (e && e.dataTransfer) {
       let dataID = e.dataTransfer.getData("Text").split("-");
@@ -374,7 +394,7 @@ const App = () => {
     }
   };
 
-  const onGraveyardDrop = e => {
+  const onGraveyardDrop = (e) => {
     if (e && e.dataTransfer) {
       let dataID = e.dataTransfer.getData("Text").split("-");
       const zone = dataID[0];
@@ -394,7 +414,6 @@ const App = () => {
           });
           updatedHand.splice(currentCardIndex, 1);
           updatedGraveyard.unshift(movedCard);
-          console.log("moved card and update gy", movedCard, updatedGraveyard);
           setHand(updatedHand);
           setGraveyard(updatedGraveyard);
           break;
@@ -434,7 +453,7 @@ const App = () => {
       }
     }
   };
-  const onExiledDrop = e => {
+  const onExiledDrop = (e) => {
     if (e && e.dataTransfer) {
       let dataID = e.dataTransfer.getData("Text").split("-");
       const zone = dataID[0];
@@ -495,7 +514,7 @@ const App = () => {
     }
   };
 
-  const onDragEnd = e => {
+  const onDragEnd = (e) => {
     // console.log("onDragEnd", e.target);
     e.target.style.opacity = "1";
   };
