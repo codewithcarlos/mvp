@@ -106,10 +106,18 @@ const App = () => {
       getCardImages();
       return;
     }
-    const shuffledDeck = shuffle([...deckWithImages, ...field, ...hand]);
+    const shuffledDeck = shuffle([
+      ...deckWithImages,
+      ...field,
+      ...hand,
+      ...graveyard,
+      ...exiled,
+    ]);
     // console.log("shuffledDeck", shuffledDeck, shuffledDeck.length);
     setCoordinates({});
     setField([]);
+    setGraveyard([]);
+    setExiled([]);
     setHandSize(7);
     setHand(shuffledDeck.slice(0, 7));
     setDeckWithImages(shuffledDeck.slice(7));
@@ -190,7 +198,7 @@ const App = () => {
           );
           setCoordinates({
             ...coordinates,
-            [dataID]: { x: e.pageX - 70, y: e.pageY - 105 },
+            [dataID]: { x: e.pageX - 70, y: e.pageY - 85 },
           });
           setHand(updatedHand);
           setField([...field, movedCard]);
@@ -201,7 +209,7 @@ const App = () => {
           movedCard = field.find((card) => card.cardID == dataID);
           setCoordinates({
             ...coordinates,
-            [dataID]: { x: e.pageX - 70, y: e.pageY - 105 },
+            [dataID]: { x: e.pageX - 70, y: e.pageY - 85 },
           });
           break;
 
@@ -473,7 +481,6 @@ const App = () => {
           });
           updatedHand.splice(currentCardIndex, 1);
           updatedExiled.unshift(movedCard);
-          // console.log("moved card and update exiled", movedCard, updatedExiled);
           setHand(updatedHand);
           setExiled(updatedExiled);
           break;
@@ -519,24 +526,47 @@ const App = () => {
     e.target.style.opacity = "1";
   };
 
+  const handleDropdownSelection = (e) => {
+    e.persist();
+    console.log("find data-id", e.target.dataset.id.split("-")[1]);
+    const cardID = e.target.dataset.id.split("-")[1];
+    const updatedDeck = [...deckWithImages];
+    let movedCard, movedIndex;
+    deckWithImages.map((card, i) => {
+      if (card.cardID == cardID) {
+        movedCard = card;
+        movedIndex = i;
+      }
+    });
+    updatedDeck.splice(movedIndex, 1);
+    const updatedHand = [...hand];
+    updatedHand.push(movedCard);
+    setHand(updatedHand);
+    setHandSize(handSize + 1);
+    setDeckWithImages(updatedDeck);
+  };
+
   return (
     <div className="app">
-      <Commands
-        shuffle={shuffle}
-        findCardByName={findCardByName}
-        getCardImages={getCardImages}
-        drawCard={drawCard}
-        newGame={newGame}
-        deck={deckWithImages}
-      />
-      <Battleground
-        field={field}
-        coordinates={coordinates}
-        onDragOver={onDragOver}
-        onDragStart={onDragStart}
-        onDragEnd={onDragEnd}
-        onDrop={onBattlegroundDrop}
-      />
+      <div className="container-flex">
+        <Battleground
+          field={field}
+          coordinates={coordinates}
+          onDragOver={onDragOver}
+          onDragStart={onDragStart}
+          onDragEnd={onDragEnd}
+          onDrop={onBattlegroundDrop}
+        />
+        <Commands
+          shuffle={shuffle}
+          findCardByName={findCardByName}
+          getCardImages={getCardImages}
+          drawCard={drawCard}
+          newGame={newGame}
+          deck={deckWithImages}
+          handleDropdownSelection={handleDropdownSelection}
+        />
+      </div>
       {deckWithImages.length >= 0 && (
         <div className="container-flex">
           <Hand

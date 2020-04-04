@@ -20,26 +20,22 @@ body {
 .zones .card-image {
   height: 170px;
 }
-
 .card {
   margin: 0 0.5%;
 }
-
 .hand {
   display: flex;
   width: 77vw;
   overflow: auto;
   border: 1px solid #ccc;
   padding: 10px;
-  height: 205px;
+  height: 210px;
   margin-right: 2%;
   align-items: center;
 }
-
 .rotated {
   transform: rotate(90deg);
 }
-
 .battleground {
   width: 75%;
   margin-bottom: 15px;
@@ -49,11 +45,6 @@ body {
   height: 475px;
   position: relative;
 }
-/* .bg-container {
-  height: 475px;
-  position: relative;
-} */
-
 .box {
   background: #fff;
   border: 1px solid #999;
@@ -64,14 +55,12 @@ body {
   padding: 10px;
   float: left;
 }
-
 .zones {
   display: flex;
   border: 1px solid #ccc;
   padding: 10px;
-  height: 205px;
+  height: 210px;
 }
-
 .container-flex {
   display: flex;
 }
@@ -90,7 +79,24 @@ body {
   width: 135px;
   margin-right: 10px;
 }
-
 .exiled-slot {
   margin-right: 0;
+}
+.commands {
+  margin-left: 3%;
+  width: 200px;
+}
+.commands button {
+  display: block;
+  background-color: #445b16;
+  height: 36px;
+  color: #fff;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 600;
+  width: 100%;
+  margin-bottom: 2%;
+}
+.search .dropdown {
+  margin-bottom: 2%;
 }
