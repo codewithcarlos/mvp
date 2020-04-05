@@ -64,6 +64,7 @@ body {
 }
 .zones {
   display: flex;
+  align-items: center;
   border: 1px solid #ccc;
   padding: 10px;
   height: 210px;
@@ -125,4 +126,10 @@ body {
 }
 .popup button {
   margin: 3%;
+}
+.search-graveyard .search .dropdown {
+  z-index: 3;
+}
+.search-library .search .dropdown {
+  z-index: 4;
 }

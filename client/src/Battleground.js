@@ -7,7 +7,8 @@ const Battleground = ({
   onDragStart,
   onDragOver,
   onDrop,
-  onDragEnd
+  onDragEnd,
+  untapAll,
   // indexCounter,
   // setIndexCounter
 }) => {
@@ -16,10 +17,10 @@ const Battleground = ({
   return (
     <div
       className="battleground"
-      onDragStart={e => onDragStart(e, "field")}
-      onDrop={e => onDrop(e)}
-      onDragOver={e => onDragOver(e)}
-      onDragEnd={e => onDragEnd(e)}
+      onDragStart={(e) => onDragStart(e, "field")}
+      onDrop={(e) => onDrop(e)}
+      onDragOver={(e) => onDragOver(e)}
+      onDragEnd={(e) => onDragEnd(e)}
     >
       {field.length &&
         field.map((card, i) => (
@@ -31,6 +32,7 @@ const Battleground = ({
             setIndexCounter={setIndexCounter}
             coordinates={coordinates}
             onDragStart={onDragStart}
+            untapAll={untapAll}
           />
         ))}
     </div>

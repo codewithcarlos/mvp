@@ -1,15 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const DraggableCard1 = ({
   card,
   indexCounter,
   setIndexCounter,
   coordinates,
-  onDragStart
+  onDragStart,
+  untapAll,
 }) => {
   const [counter, setCounter] = useState(0);
   const [isRotated, setIsRotated] = useState(false);
   // console.log("draggablecard rerendered", card.cardID);
+
+  useEffect(() => {
+    setIsRotated(false);
+  }, [untapAll]);
 
   const rotate = () => {
     setIsRotated(!isRotated);
@@ -35,7 +40,7 @@ const DraggableCard1 = ({
     <div
       className="card"
       onMouseDown={onStart}
-      onDragStart={e => onDragStart(e, "field")}
+      onDragStart={(e) => onDragStart(e, "field")}
     >
       <div
         className="card-image-container"
@@ -43,7 +48,7 @@ const DraggableCard1 = ({
           zIndex: counter,
           left: x || 0,
           top: y || 0,
-          position: "absolute"
+          position: "absolute",
         }}
       >
         <img

@@ -18,6 +18,7 @@ const App = () => {
   const [coordinates, setCoordinates] = useState({ x: 0, y: 0 });
   const [graveyard, setGraveyard] = useState([]);
   const [exiled, setExiled] = useState([]);
+  const [untapAll, setUntapAll] = useState(false);
 
   useEffect(() => {
     shuffleDeck();
@@ -246,6 +247,7 @@ const App = () => {
   const onHandDrop = (e) => {
     if (!deckWithImages.length) return;
     if (e && e.dataTransfer) {
+      e.persist();
       let dataID = e.dataTransfer.getData("Text").split("-");
       const zone = dataID[0];
       dataID = dataID[1];
@@ -277,8 +279,12 @@ const App = () => {
               movedCard = card;
               currentCardIndex = i;
             }
-            if (card.cardID == targetId && targetId !== "") {
-              targetCardIndex = i;
+            if (targetId === "") {
+              targetCardIndex = hand.length;
+            } else {
+              if (card.cardID == targetId) {
+                targetCardIndex = i;
+              }
             }
           });
           updatedHand.splice(currentCardIndex, 1);
@@ -293,11 +299,16 @@ const App = () => {
               currentCardIndex = i;
             }
           });
-          hand.map((card, i) => {
-            if (card.cardID == targetId && targetId !== "") {
-              targetCardIndex = i;
-            }
-          });
+
+          if (targetId === "") {
+            targetCardIndex = hand.length;
+          } else {
+            hand.map((card, i) => {
+              if (card.cardID == targetId && targetId !== "") {
+                targetCardIndex = i;
+              }
+            });
+          }
 
           let updatedField = [...field];
           updatedField.splice(currentCardIndex, 1);
@@ -310,11 +321,15 @@ const App = () => {
         case "graveyard":
           const updatedGraveyard = [...graveyard];
           movedCard = updatedGraveyard.shift();
-          hand.map((card, i) => {
-            if (card.cardID == targetId && targetId !== "") {
-              targetCardIndex = i;
-            }
-          });
+          if (targetId === "") {
+            targetCardIndex = hand.length;
+          } else {
+            hand.map((card, i) => {
+              if (card.cardID == targetId) {
+                targetCardIndex = i;
+              }
+            });
+          }
           updatedHand.splice(targetCardIndex, 0, movedCard);
           setGraveyard(updatedGraveyard);
           setHand(updatedHand);
@@ -324,11 +339,15 @@ const App = () => {
         case "exiled":
           const updatedExiled = [...exiled];
           movedCard = updatedExiled.shift();
-          hand.map((card, i) => {
-            if (card.cardID == targetId && targetId !== "") {
-              targetCardIndex = i;
-            }
-          });
+          if (targetId === "") {
+            targetCardIndex = hand.length;
+          } else {
+            hand.map((card, i) => {
+              if (card.cardID == targetId) {
+                targetCardIndex = i;
+              }
+            });
+          }
           updatedHand.splice(targetCardIndex, 0, movedCard);
           setExiled(updatedExiled);
           setHand(updatedHand);
@@ -528,22 +547,53 @@ const App = () => {
 
   const handleDropdownSelection = (e) => {
     e.persist();
-    console.log("find data-id", e.target.dataset.id.split("-")[1]);
+    const zone = e.target.dataset.id.split("-")[0];
     const cardID = e.target.dataset.id.split("-")[1];
-    const updatedDeck = [...deckWithImages];
-    let movedCard, movedIndex;
-    deckWithImages.map((card, i) => {
-      if (card.cardID == cardID) {
-        movedCard = card;
-        movedIndex = i;
-      }
-    });
-    updatedDeck.splice(movedIndex, 1);
+    console.log("find data-id", zone, cardID);
+    // const updatedDeck =
+    let updatedDeck, movedCard, movedIndex;
+    switch (zone) {
+      case "deck":
+        updatedDeck = [...deckWithImages];
+        deckWithImages.map((card, i) => {
+          if (card.cardID == cardID) {
+            movedCard = card;
+            movedIndex = i;
+          }
+        });
+        updatedDeck.splice(movedIndex, 1);
+        setDeckWithImages(updatedDeck);
+        break;
+      case "graveyard":
+        updatedDeck = [...graveyard];
+        graveyard.map((card, i) => {
+          if (card.cardID == cardID) {
+            movedCard = card;
+            movedIndex = i;
+          }
+        });
+        updatedDeck.splice(movedIndex, 1);
+        setGraveyard(updatedDeck);
+        break;
+      case "exiled":
+        updatedDeck = [...exiled];
+        exiled.map((card, i) => {
+          if (card.cardID == cardID) {
+            movedCard = card;
+            movedIndex = i;
+          }
+        });
+        updatedDeck.splice(movedIndex, 1);
+        setExiled(updatedDeck);
+        break;
+      default:
+        break;
+    }
+
     const updatedHand = [...hand];
     updatedHand.push(movedCard);
     setHand(updatedHand);
     setHandSize(handSize + 1);
-    setDeckWithImages(updatedDeck);
   };
 
   const handlePopupClick = (e, cardID, direction) => {
@@ -570,6 +620,10 @@ const App = () => {
     setDeckWithImages(updatedDeck);
   };
 
+  const handeleUntapAll = () => {
+    setUntapAll(!untapAll);
+  };
+
   return (
     <div className="app">
       <div className="container-flex">
@@ -580,6 +634,7 @@ const App = () => {
           onDragStart={onDragStart}
           onDragEnd={onDragEnd}
           onDrop={onBattlegroundDrop}
+          untapAll={untapAll}
         />
         <Commands
           shuffle={shuffle}
@@ -589,6 +644,9 @@ const App = () => {
           newGame={newGame}
           deck={deckWithImages}
           handleDropdownSelection={handleDropdownSelection}
+          handeleUntapAll={handeleUntapAll}
+          graveyard={graveyard}
+          exiled={exiled}
         />
       </div>
       {deckWithImages.length >= 0 && (

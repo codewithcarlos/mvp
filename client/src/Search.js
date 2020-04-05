@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
-// import { Dropdown } from "semantic-ui-react";
 
-const SearchDeck = ({ deck, handleDropdownSelection }) => {
+const Search = ({ zone, zoneId, handleDropdownSelection }) => {
   const [term, setTerm] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [list, setList] = useState([]);
 
   useEffect(() => {
     const newList = [];
-    if (deck.length) {
-      deck.map((card) =>
+    if (zone.length) {
+      zone.map((card) =>
         newList.push({ key: card.cardID, value: card.cardID, text: card.name })
       );
     }
@@ -19,7 +18,7 @@ const SearchDeck = ({ deck, handleDropdownSelection }) => {
       return 0;
     });
     setList(newList);
-  }, [deck]);
+  }, [zone]);
 
   const handleTermChange = (e) => {
     setTerm(e.target.value);
@@ -41,7 +40,7 @@ const SearchDeck = ({ deck, handleDropdownSelection }) => {
           tabIndex="0"
           type="text"
           value={term}
-          placeholder="Search library"
+          placeholder={"Search " + zoneId}
           onChange={handleTermChange}
         />
         <div
@@ -70,9 +69,9 @@ const SearchDeck = ({ deck, handleDropdownSelection }) => {
                     handleDropdownSelection(e);
                     setTerm("");
                   }}
-                  data-id={`tutor-${card.value}`}
+                  data-id={`${zoneId}-${card.value}`}
                 >
-                  <div className="text" data-id={`tutor-${card.value}`}>
+                  <div className="text" data-id={`${zoneId}-${card.value}`}>
                     {card.text}
                   </div>
                 </div>
@@ -86,4 +85,4 @@ const SearchDeck = ({ deck, handleDropdownSelection }) => {
   );
 };
 
-export default SearchDeck;
+export default Search;
