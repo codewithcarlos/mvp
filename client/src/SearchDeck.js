@@ -41,7 +41,7 @@ const SearchDeck = ({ deck, handleDropdownSelection }) => {
           tabIndex="0"
           type="text"
           value={term}
-          placeholder="Search for card"
+          placeholder="Search library"
           onChange={handleTermChange}
         />
         <div

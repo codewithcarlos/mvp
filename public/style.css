@@ -16,22 +16,29 @@ body {
   height: 170px;
   width: auto;
   position: relative;
+  border-radius: 5px;
 }
 .zones .card-image {
   height: 170px;
 }
 .card {
-  margin: 0 0.5%;
+  /* margin: 0 0.5%; */
+}
+.card-container {
+  display: block;
+  margin-right: 1px;
+  /* position: absolute; */
 }
 .hand {
   display: flex;
-  width: 77vw;
+  width: 960px;
   overflow: auto;
   border: 1px solid #ccc;
   padding: 10px;
   height: 210px;
-  margin-right: 2%;
+  margin-right: 15px;
   align-items: center;
+  overflow: visible;
 }
 .rotated {
   transform: rotate(90deg);
@@ -99,4 +106,23 @@ body {
 }
 .search .dropdown {
   margin-bottom: 2%;
+}
+.popup.hide {
+  display: none;
+}
+.popup {
+  position: absolute;
+  z-index: 2;
+  transform: translate(0px, -40px);
+  display: flex;
+  background-color: #fff;
+  height: auto;
+  justify-content: center;
+  width: 122px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+.popup button {
+  margin: 3%;
 }

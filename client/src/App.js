@@ -185,7 +185,7 @@ const App = () => {
           let movedCard = updatedDeck.splice(0, 1);
           setCoordinates({
             ...coordinates,
-            [movedCard[0].cardID]: { x: e.pageX - 70, y: e.pageY - 105 },
+            [movedCard[0].cardID]: { x: e.pageX - 70, y: e.pageY - 85 },
           });
           setField([...field, ...movedCard]);
           setDeckWithImages(updatedDeck);
@@ -218,7 +218,7 @@ const App = () => {
           movedCard = updatedGraveyard.shift();
           setCoordinates({
             ...coordinates,
-            [dataID]: { x: e.pageX - 70, y: e.pageY - 105 },
+            [dataID]: { x: e.pageX - 70, y: e.pageY - 85 },
           });
           setGraveyard(updatedGraveyard);
           setField([...field, movedCard]);
@@ -229,7 +229,7 @@ const App = () => {
           movedCard = updatedExiled.shift();
           setCoordinates({
             ...coordinates,
-            [dataID]: { x: e.pageX - 70, y: e.pageY - 105 },
+            [dataID]: { x: e.pageX - 70, y: e.pageY - 85 },
           });
           setExiled(updatedExiled);
           setField([...field, movedCard]);
@@ -546,6 +546,30 @@ const App = () => {
     setDeckWithImages(updatedDeck);
   };
 
+  const handlePopupClick = (e, cardID, direction) => {
+    const updatedDeck = [...deckWithImages];
+    let updatedHand = [...hand];
+    let movedCard, currentCardIndex;
+    hand.map((card, i) => {
+      if (card.cardID == cardID) {
+        movedCard = card;
+        currentCardIndex = i;
+      }
+    });
+    if (direction === "top") {
+      console.log("top", cardID);
+      updatedHand.splice(currentCardIndex, 1);
+      updatedDeck.unshift(movedCard);
+    } else {
+      console.log("bottom", cardID);
+      updatedHand.splice(currentCardIndex, 1);
+      updatedDeck.push(movedCard);
+    }
+    setHand(updatedHand);
+    // setHandSize(handSize - 1);
+    setDeckWithImages(updatedDeck);
+  };
+
   return (
     <div className="app">
       <div className="container-flex">
@@ -577,6 +601,7 @@ const App = () => {
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
             onDrop={onHandDrop}
+            handlePopupClick={handlePopupClick}
           />
           <div className="zones">
             <Deck
@@ -585,6 +610,7 @@ const App = () => {
               onDragOver={onDragOver}
               onDragEnd={onDragEnd}
               onDrop={onDeckDrop}
+              deck={deckWithImages}
             />
             <Graveyard
               onDragStart={onDragStart}

@@ -7,25 +7,29 @@ const Hand = ({
   onDragStart,
   onDrop,
   onDragOver,
-  onDragEnd
+  onDragEnd,
+  handlePopupClick,
 }) => {
   // console.log("hand rerendered", hand);
   return (
     <div
       className="hand"
-      onDrop={e => onDrop(e)}
-      onDragOver={e => onDragOver(e)}
-      onDragEnd={e => onDragEnd(e)}
+      onDrop={(e) => onDrop(e)}
+      onDragOver={(e) => onDragOver(e)}
+      onDragEnd={(e) => onDragEnd(e)}
     >
       {hand.map(
         (card, i) =>
-          i < handSize && (
+          i < hand.length && (
             <Card
               card={card}
               key={i}
               i={i}
-              onDragStart={e => onDragStart(e, "hand")}
+              onDragStart={(e) => onDragStart(e, "hand")}
               onDrop={onDrop}
+              left={hand.length <= 7 ? 0 : (870 / hand.length) * i + 20 - i}
+              position={hand.length <= 7 ? "relative" : "absolute"}
+              handlePopupClick={handlePopupClick}
             />
           )
       )}
