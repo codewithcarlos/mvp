@@ -3,7 +3,6 @@ import Card from "./Card";
 
 const Hand = ({
   hand,
-  handSize,
   onDragStart,
   onDrop,
   onDragOver,

@@ -9,8 +9,15 @@ body {
   font-weight: 200;
   margin: 0;
 }
+button {
+  cursor: pointer;
+}
+.commands button:hover {
+  color: #e49b0f;
+  background: rgba(68, 91, 22, 0.9);
+}
 .app {
-  margin: 0 10px;
+  /* margin: 0 10px; */
 }
 .card-image {
   height: 170px;
@@ -44,7 +51,7 @@ body {
   transform: rotate(90deg);
 }
 .battleground {
-  width: 75%;
+  width: 80%;
   margin-bottom: 15px;
   background-image: url("https://227rsi2stdr53e3wto2skssd7xe-wpengine.netdna-ssl.com/wp-content/uploads/2016/05/deathrite-shaman-1024x592.jpg");
   /* z-index: -1; */
@@ -71,6 +78,7 @@ body {
 }
 .container-flex {
   display: flex;
+  margin-left: 10px;
 }
 .mtg-logo {
   height: 100px;
@@ -91,7 +99,7 @@ body {
   margin-right: 0;
 }
 .commands {
-  margin-left: 3%;
+  margin-left: 1%;
   width: 200px;
 }
 .commands button {
@@ -132,4 +140,12 @@ body {
 }
 .search-library .search .dropdown {
   z-index: 4;
+}
+.ui.menu {
+  background-color: #445b16 !important;
+  height: 50px;
+  border-radius: 0;
+}
+.ui.inverted.menu a.item:hover {
+  color: #e49b0f;
 }

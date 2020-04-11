@@ -1,7 +1,7 @@
 const mtg = require("mtgsdk");
 
-const getMagicCard = callback => {
-  mtg.card.find(3).then(result => {
+const getMagicCard = (callback) => {
+  mtg.card.find(3).then((result) => {
     console.log(result);
     console.log(result.card.name); // "Black Lotus"
     callback(result);
@@ -9,11 +9,9 @@ const getMagicCard = callback => {
 };
 
 const findCardByName = (term, callback) => {
-  mtg.card.where({ name: term }).then(result => {
+  mtg.card.where({ name: term }).then((result) => {
     callback(result);
   });
 };
-
-
 
 module.exports = { getMagicCard, findCardByName };

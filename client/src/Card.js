@@ -4,12 +4,6 @@ import { Icon, Popup } from "semantic-ui-react";
 const Card = ({ card, onDragStart, left, position, handlePopupClick }) => {
   const [showPopup, setShowPopup] = useState(false);
   // console.log("card rerendered", card.cardID);
-  // const handleOnMouseOver = () => {
-  //   setShowPopup(true);
-  // };
-  // const handleOnMouseLeave = () => {
-  //   setShowPopup(false);
-  // };
 
   return (
     <div

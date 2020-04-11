@@ -66,7 +66,7 @@ var populate = () => {
     // console.log(name, imageUrl, multiverseid, firstValidCard);
     insertCard([name, imageUrl, multiverseid], (err, result) => {
       if (err) {
-        console.log("error inserting card into the db", j);
+        console.log("error inserting card into the db", j, err);
       }
       j++;
       if (j < deck.length) populate();

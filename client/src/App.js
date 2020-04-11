@@ -7,28 +7,28 @@ import Commands from "./Commands";
 import Battleground from "./Battleground";
 import Graveyard from "./Graveyard";
 import Exiled from "./Exiled";
+import NavBar from "./NavBar";
 
 const App = () => {
-  const [mainDeck, setMainDeck] = useState([]);
+  const [importedDeck, setImportedDeck] = useState([]);
   // const [sideboard, setSideboard] = useState([]);
-  const [deckWithImages, setDeckWithImages] = useState({});
-  const [handSize, setHandSize] = useState(0);
+  const [library, setLibrary] = useState({});
   const [hand, setHand] = useState([]);
   const [field, setField] = useState([]);
-  const [coordinates, setCoordinates] = useState({ x: 0, y: 0 });
   const [graveyard, setGraveyard] = useState([]);
   const [exiled, setExiled] = useState([]);
+  const [coordinates, setCoordinates] = useState({});
   const [untapAll, setUntapAll] = useState(false);
 
   useEffect(() => {
-    shuffleDeck();
+    parseDeck();
   }, []);
 
-  const shuffleDeck = () => {
+  const parseDeck = () => {
     const deck = [];
-    // console.log(mockDeck.trim().split("\n"));
+    console.log("parse step 1", mockDeck.trim().split("\n"));
     const mockDeckArr = mockDeck.trim().split("\n");
-    let mainDeckIndex = 60;
+    let importedDeckIndex = 60;
     mockDeckArr.map((card, index) => {
       const firstSpace = card.indexOf(" ");
       const quantity =
@@ -36,7 +36,7 @@ const App = () => {
           ? 0
           : parseInt(card.slice(0, firstSpace));
       // console.log(quantity);
-      if (quantity === 0 && index > 60) mainDeckIndex = index;
+      if (quantity === 0 && index > 60) importedDeckIndex = index;
       const cardName = card.slice(firstSpace);
       // console.log("quantity", quantity);
       // console.log("cardname", cardName);
@@ -45,19 +45,19 @@ const App = () => {
       }
     });
     // console.log("unique deck", deck);
-    const mainDeck = deck.slice(0, mainDeckIndex);
-    // console.log('main deck is:', mainDeck);
-    const sideboard = deck.slice(mainDeckIndex);
+    const importedDeck = deck.slice(0, importedDeckIndex);
+    // console.log("main deck is:", importedDeck);
+    const sideboard = deck.slice(importedDeckIndex);
     // console.log("sideboard is:", sideboard);
-    const randomizedDeck = shuffle(mainDeck);
+    const randomizedDeck = shuffle(importedDeck);
     // console.log('shuffled main deck is:', randomizedDeck);
-    setMainDeck(randomizedDeck);
+    setImportedDeck(randomizedDeck);
     // setSideboard(sideboard);
-    return randomizedDeck;
+    // return randomizedDeck;
   };
 
   const shuffle = (array) => {
-    if (!array.length) return;
+    if (!array.length) return array;
     let currentIndex = array.length,
       temporaryValue,
       randomIndex;
@@ -73,7 +73,7 @@ const App = () => {
       array[currentIndex] = array[randomIndex];
       array[randomIndex] = temporaryValue;
     }
-    if (deckWithImages.length !== undefined) setDeckWithImages(array);
+    if (library.length !== undefined) setLibrary(array);
     return array;
   };
 
@@ -103,12 +103,12 @@ const App = () => {
   };
 
   const newGame = () => {
-    if (deckWithImages.length === undefined) {
-      getCardImages();
+    if (library.length === undefined) {
+      getCardImages(importedDeck);
       return;
     }
     const shuffledDeck = shuffle([
-      ...deckWithImages,
+      ...library,
       ...field,
       ...hand,
       ...graveyard,
@@ -119,17 +119,16 @@ const App = () => {
     setField([]);
     setGraveyard([]);
     setExiled([]);
-    setHandSize(7);
     setHand(shuffledDeck.slice(0, 7));
-    setDeckWithImages(shuffledDeck.slice(7));
+    setLibrary(shuffledDeck.slice(7));
   };
 
-  const getCardImages = () => {
-    console.log("axios called");
+  const getCardImages = (importedDeck) => {
+    // console.log("axios called", importedDeck);
     axios
       .get("/deck", {
         params: {
-          mainDeck,
+          importedDeck,
         },
       })
       .then(({ data }) => {
@@ -137,9 +136,8 @@ const App = () => {
         for (let i = 0; i < data.length; i++) {
           data[i]["cardID"] = i;
         }
-        setHandSize(7);
         setHand(data.slice(0, 7));
-        setDeckWithImages(data.slice(7));
+        setLibrary(data.slice(7));
       })
       .catch((err) => {
         console.log("error", err);
@@ -147,13 +145,11 @@ const App = () => {
   };
 
   const drawCard = () => {
-    if (deckWithImages.length === undefined || deckWithImages.length === 0)
-      return;
-    const updatedDeck = [...deckWithImages];
+    if (library.length === undefined || library.length === 0) return;
+    const updatedDeck = [...library];
     const movedCard = updatedDeck.splice(0, 1);
     setHand([...hand, ...movedCard]);
-    setDeckWithImages(updatedDeck);
-    setHandSize(handSize + 1);
+    setLibrary(updatedDeck);
   };
 
   const onDragOver = (e) => {
@@ -172,7 +168,7 @@ const App = () => {
   };
 
   const onBattlegroundDrop = (e) => {
-    if (deckWithImages.length === undefined) return;
+    if (library.length === undefined) return;
     if (e && e.dataTransfer) {
       e.target.style.opacity = "1";
       let dataID = e.dataTransfer.getData("Text").split("-");
@@ -181,15 +177,15 @@ const App = () => {
       console.log("onBattlegroundDrop", zone);
       switch (zone) {
         case "deck":
-          if (deckWithImages.length === 0) return;
-          const updatedDeck = [...deckWithImages];
+          if (library.length === 0) return;
+          const updatedDeck = [...library];
           let movedCard = updatedDeck.splice(0, 1);
           setCoordinates({
             ...coordinates,
-            [movedCard[0].cardID]: { x: e.pageX - 70, y: e.pageY - 85 },
+            [movedCard[0].cardID]: { x: e.pageX - 70, y: e.pageY - 149 },
           });
           setField([...field, ...movedCard]);
-          setDeckWithImages(updatedDeck);
+          setLibrary(updatedDeck);
           break;
 
         case "hand":
@@ -199,18 +195,17 @@ const App = () => {
           );
           setCoordinates({
             ...coordinates,
-            [dataID]: { x: e.pageX - 70, y: e.pageY - 85 },
+            [dataID]: { x: e.pageX - 70, y: e.pageY - 149 },
           });
           setHand(updatedHand);
           setField([...field, movedCard]);
-          setHandSize(handSize - 1);
           break;
 
         case "field":
           movedCard = field.find((card) => card.cardID == dataID);
           setCoordinates({
             ...coordinates,
-            [dataID]: { x: e.pageX - 70, y: e.pageY - 85 },
+            [dataID]: { x: e.pageX - 70, y: e.pageY - 149 },
           });
           break;
 
@@ -219,7 +214,7 @@ const App = () => {
           movedCard = updatedGraveyard.shift();
           setCoordinates({
             ...coordinates,
-            [dataID]: { x: e.pageX - 70, y: e.pageY - 85 },
+            [dataID]: { x: e.pageX - 70, y: e.pageY - 149 },
           });
           setGraveyard(updatedGraveyard);
           setField([...field, movedCard]);
@@ -230,7 +225,7 @@ const App = () => {
           movedCard = updatedExiled.shift();
           setCoordinates({
             ...coordinates,
-            [dataID]: { x: e.pageX - 70, y: e.pageY - 85 },
+            [dataID]: { x: e.pageX - 70, y: e.pageY - 149 },
           });
           setExiled(updatedExiled);
           setField([...field, movedCard]);
@@ -245,7 +240,7 @@ const App = () => {
   };
 
   const onHandDrop = (e) => {
-    if (!deckWithImages.length) return;
+    if (!library.length) return;
     if (e && e.dataTransfer) {
       e.persist();
       let dataID = e.dataTransfer.getData("Text").split("-");
@@ -262,15 +257,14 @@ const App = () => {
             drawCard();
             return;
           }
-          const updatedDeck = [...deckWithImages];
+          const updatedDeck = [...library];
           movedCard = updatedDeck.splice(0, 1);
           hand.map((card, i) => {
             if (card.cardID == targetId) targetCardIndex = i;
           });
           updatedHand.splice(targetCardIndex, 0, ...movedCard);
           setHand(updatedHand);
-          setHandSize(handSize + 1);
-          setDeckWithImages(updatedDeck);
+          setLibrary(updatedDeck);
           break;
 
         case "hand":
@@ -315,7 +309,6 @@ const App = () => {
           updatedHand.splice(targetCardIndex, 0, movedCard);
           setField(updatedField);
           setHand(updatedHand);
-          setHandSize(handSize + 1);
           break;
 
         case "graveyard":
@@ -333,7 +326,6 @@ const App = () => {
           updatedHand.splice(targetCardIndex, 0, movedCard);
           setGraveyard(updatedGraveyard);
           setHand(updatedHand);
-          setHandSize(handSize + 1);
           break;
 
         case "exiled":
@@ -351,7 +343,6 @@ const App = () => {
           updatedHand.splice(targetCardIndex, 0, movedCard);
           setExiled(updatedExiled);
           setHand(updatedHand);
-          setHandSize(handSize + 1);
           break;
 
         default:
@@ -366,7 +357,7 @@ const App = () => {
       let dataID = e.dataTransfer.getData("Text").split("-");
       const zone = dataID[0];
       dataID = dataID[1];
-      let updatedDeck = [...deckWithImages];
+      let updatedDeck = [...library];
 
       let currentCardIndex, movedCard;
       console.log("onDeckDrop", zone);
@@ -382,7 +373,7 @@ const App = () => {
           updatedHand.splice(currentCardIndex, 1);
           updatedDeck.unshift(movedCard);
           setHand(updatedHand);
-          setDeckWithImages(updatedDeck);
+          setLibrary(updatedDeck);
           break;
 
         case "field":
@@ -396,7 +387,7 @@ const App = () => {
           updatedField.splice(currentCardIndex, 1);
           updatedDeck.unshift(movedCard);
           setField(updatedField);
-          setDeckWithImages(updatedDeck);
+          setLibrary(updatedDeck);
           break;
 
         case "graveyard":
@@ -404,7 +395,7 @@ const App = () => {
           movedCard = updatedGraveyard.shift();
           updatedDeck.unshift(movedCard);
           setGraveyard(updatedGraveyard);
-          setDeckWithImages(updatedDeck);
+          setLibrary(updatedDeck);
           break;
 
         case "exiled":
@@ -412,7 +403,7 @@ const App = () => {
           movedCard = updatedExiled.shift();
           updatedDeck.unshift(movedCard);
           setExiled(updatedExiled);
-          setDeckWithImages(updatedDeck);
+          setLibrary(updatedDeck);
           break;
 
         default:
@@ -460,10 +451,10 @@ const App = () => {
           break;
 
         case "deck":
-          const updatedDeck = [...deckWithImages];
+          const updatedDeck = [...library];
           movedCard = updatedDeck.splice(0, 1);
           updatedGraveyard.unshift(movedCard[0]);
-          setDeckWithImages(updatedDeck);
+          setLibrary(updatedDeck);
           setGraveyard(updatedGraveyard);
           break;
 
@@ -519,10 +510,10 @@ const App = () => {
           break;
 
         case "deck":
-          const updatedDeck = [...deckWithImages];
+          const updatedDeck = [...library];
           movedCard = updatedDeck.splice(0, 1);
           updatedExiled.unshift(movedCard[0]);
-          setDeckWithImages(updatedDeck);
+          setLibrary(updatedDeck);
           setExiled(updatedExiled);
           break;
 
@@ -554,15 +545,15 @@ const App = () => {
     let updatedDeck, movedCard, movedIndex;
     switch (zone) {
       case "deck":
-        updatedDeck = [...deckWithImages];
-        deckWithImages.map((card, i) => {
+        updatedDeck = [...library];
+        library.map((card, i) => {
           if (card.cardID == cardID) {
             movedCard = card;
             movedIndex = i;
           }
         });
         updatedDeck.splice(movedIndex, 1);
-        setDeckWithImages(updatedDeck);
+        setLibrary(updatedDeck);
         break;
       case "graveyard":
         updatedDeck = [...graveyard];
@@ -593,11 +584,10 @@ const App = () => {
     const updatedHand = [...hand];
     updatedHand.push(movedCard);
     setHand(updatedHand);
-    setHandSize(handSize + 1);
   };
 
   const handlePopupClick = (e, cardID, direction) => {
-    const updatedDeck = [...deckWithImages];
+    const updatedDeck = [...library];
     let updatedHand = [...hand];
     let movedCard, currentCardIndex;
     hand.map((card, i) => {
@@ -616,8 +606,7 @@ const App = () => {
       updatedDeck.push(movedCard);
     }
     setHand(updatedHand);
-    // setHandSize(handSize - 1);
-    setDeckWithImages(updatedDeck);
+    setLibrary(updatedDeck);
   };
 
   const handeleUntapAll = () => {
@@ -626,6 +615,7 @@ const App = () => {
 
   return (
     <div className="app">
+      <NavBar />
       <div className="container-flex">
         <Battleground
           field={field}
@@ -642,19 +632,17 @@ const App = () => {
           getCardImages={getCardImages}
           drawCard={drawCard}
           newGame={newGame}
-          deck={deckWithImages}
+          deck={library}
           handleDropdownSelection={handleDropdownSelection}
           handeleUntapAll={handeleUntapAll}
           graveyard={graveyard}
           exiled={exiled}
         />
       </div>
-      {deckWithImages.length >= 0 && (
+      {library.length >= 0 && (
         <div className="container-flex">
           <Hand
-            deckWithImages={deckWithImages}
             hand={hand}
-            handSize={handSize}
             onDragOver={onDragOver}
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
@@ -668,7 +656,7 @@ const App = () => {
               onDragOver={onDragOver}
               onDragEnd={onDragEnd}
               onDrop={onDeckDrop}
-              deck={deckWithImages}
+              deck={library}
             />
             <Graveyard
               onDragStart={onDragStart}

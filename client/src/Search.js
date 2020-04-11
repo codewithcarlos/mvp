@@ -4,7 +4,7 @@ const Search = ({ zone, zoneId, handleDropdownSelection }) => {
   const [term, setTerm] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [list, setList] = useState([]);
-
+  // console.log("zone", zone);
   useEffect(() => {
     const newList = [];
     if (zone.length) {
