@@ -11,7 +11,7 @@ const Exiled = () => {
     onDragEnd,
     exiled,
   } = rootStore.playtestStore;
-  console.log('exiled zone rerendered');
+  // console.log('exiled zone rerendered');
   return (
     <div
       className="exiled-slot"

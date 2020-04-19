@@ -12,12 +12,15 @@ body {
 button {
   cursor: pointer;
 }
+/*************************************************************************************************
+Playtest styling
+*************************************************************************************************/
 .commands button:hover {
   color: #e49b0f;
   background: rgba(68, 91, 22, 0.9);
 }
-.app {
-  /* margin: 0 10px; */
+.playtest {
+  margin-left: 10px;
 }
 .card-image {
   height: 170px;
@@ -78,7 +81,6 @@ button {
 }
 .container-flex {
   display: flex;
-  margin-left: 10px;
 }
 .mtg-logo {
   height: 100px;
@@ -148,4 +150,106 @@ button {
 }
 .ui.inverted.menu a.item:hover {
   color: #e49b0f;
+}
+
+/*************************************************************************************************
+Metagame styling
+*************************************************************************************************/
+#metagame {
+  margin: 2rem;
+}
+.metagame-deck-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  max-width: 65%;
+}
+.metagame-deck-list .ui.card:first-child,
+.metagame-deck-list .ui.card:last-child {
+  margin: 0 1em 1em 0;
+}
+.metagame-deck-list .ui.card .image img {
+  right: 20px;
+  width: 240px;
+  height: auto;
+  bottom: 30px;
+  position: relative;
+}
+.metagame-deck-list .ui.card .image {
+  overflow: hidden;
+  height: 138px;
+  margin-bottom: 10px;
+}
+
+.metagame-deck-list .ui.card {
+  width: 210px;
+  min-width: 210px;
+  padding: 10px;
+  height: 325px;
+  margin: 0 1em 1em 0;
+}
+.mana-colors {
+  margin-bottom: 5px;
+}
+.mana-colors img {
+  width: 20px;
+  margin: 0 1px;
+}
+.card-header {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 10px 0 5px 0;
+}
+.description {
+  margin-bottom: 10px;
+}
+.dollar-icon {
+  margin: 0 1px 0 5px;
+  font-weight: 700;
+  color: #222;
+  font-size: 16px;
+}
+.hashtag-icon {
+  margin: 0 5px 0 0;
+}
+i.icon.pie.chart {
+  margin: 0 3px 0 0;
+}
+.metagame-deck-list .ui.card > .extra {
+  padding: 14px 0 0 0;
+  display: flex;
+  justify-content: space-between;
+}
+.metagame-deck-list .ui.card > .extra span {
+  cursor: default;
+}
+
+/*************************************************************************************************
+DeckPage styling
+*************************************************************************************************/
+.deck-content-container {
+  margin: 3rem;
+}
+.gallery {
+  width: 200px;
+  min-width: 200px;
+  height: 150px;
+  background: url(https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=464166&type=card)
+    42% 18%;
+  background-size: 350px auto;
+  background-repeat: no-repeat;
+  position: relative;
+  margin-right: 5px;
+  border: 1px solid #ccc;
+}
+.table-deck {
+  column-count: 2;
+  -moz-column-count: 2;
+  -webkit-column-count: 2;
+}
+.table-card-name {
+  cursor: pointer;
+}
+.table-card-image {
+  height: 300px;
+  width: auto;
 }

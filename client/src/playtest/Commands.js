@@ -15,7 +15,7 @@ const Commands = () => {
     graveyard,
     exiled,
   } = rootStore.playtestStore;
-  console.log('commands rerendered');
+  // console.log('commands rerendered');
   return (
     <div className="commands">
       <button onClick={() => newGame()}>New Game</button>

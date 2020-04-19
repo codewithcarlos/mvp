@@ -11,7 +11,7 @@ const Graveyard = ({}) => {
     onDragEnd,
     graveyard,
   } = rootStore.playtestStore;
-  console.log('graveyard zone rerendered');
+  // console.log('graveyard zone rerendered');
   return (
     <div
       className="graveyard-slot"

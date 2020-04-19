@@ -15,6 +15,7 @@ export default class PlaytestStore {
   @observable exiled = [];
   @observable coordinates = {};
   @observable untapAll = false;
+  @observable sideboard = [];
 
   @action parseDeck = () => {
     const deck = [];
@@ -36,7 +37,7 @@ export default class PlaytestStore {
         deck.push(cardName.trim());
       }
     });
-    // console.log("unique deck", deck);
+    console.log("unique deck", deck);
     const importedDeck = deck.slice(0, importedDeckIndex);
     // console.log('imported deck is:', importedDeck);
     const sideboard = deck.slice(importedDeckIndex);
@@ -44,7 +45,8 @@ export default class PlaytestStore {
     const randomizedDeck = this.shuffle(importedDeck);
     // console.log("shuffled imported deck is:", randomizedDeck);
     this.importedDeck = randomizedDeck;
-    // setSideboard(sideboard);
+    this.sideboard = sideboard;
+    return [...this.importedDeck, ...this.sideboard];
   };
 
   @action shuffle = (array) => {
@@ -89,7 +91,7 @@ export default class PlaytestStore {
     // console.log(shuffledDeck, this.library);
   };
 
-  @action getCardImages = (importedDeck) => {
+  @action getCardImages = (importedDeck, cb) => {
     // console.log("axios called", importedDeck);
     axios
       .get("/deck", {
@@ -99,11 +101,15 @@ export default class PlaytestStore {
       })
       .then(({ data }) => {
         console.log("getCardImages", data);
-        for (let i = 0; i < data.length; i++) {
+        for (let i = 0; i < 60; i++) {
           data[i]["cardID"] = i;
         }
         this.hand = data.slice(0, 7);
-        this.library = data.slice(7);
+        this.library = data.slice(7, 60);
+        console.log("library is", this.library);
+
+        // cb([...this.hand, ...this.library]);
+        return [...this.hand, ...this.library];
       })
       .catch((err) => {
         console.log("error", err);
@@ -124,7 +130,7 @@ export default class PlaytestStore {
   };
 
   @action onDragStart = (e, zone) => {
-    console.log("zone is", zone);
+    // console.log("zone is", zone);
     e.persist();
     if (e.dataTransfer) {
       if (e.target.id !== "deck-img") e.target.style.opacity = "0.2";
@@ -140,7 +146,7 @@ export default class PlaytestStore {
       let dataID = e.dataTransfer.getData("Text").split("-");
       const zone = dataID[0];
       dataID = dataID[1];
-      console.log("onBattlegroundDrop", zone);
+      // console.log("onBattlegroundDrop", zone);
       let movedCard = undefined;
       switch (zone) {
         case "deck":
@@ -332,7 +338,7 @@ export default class PlaytestStore {
 
       let currentCardIndex = 0,
         movedCard;
-      console.log("onDeckDrop", zone);
+      // console.log("onDeckDrop", zone);
       switch (zone) {
         case "hand":
           let updatedHand = [...this.hand];
@@ -393,7 +399,7 @@ export default class PlaytestStore {
 
       let currentCardIndex = 0,
         movedCard;
-      console.log("onGraveyardDrop", zone);
+      // console.log("onGraveyardDrop", zone);
       switch (zone) {
         case "hand":
           let updatedHand = [...this.hand];
@@ -454,7 +460,7 @@ export default class PlaytestStore {
 
       let currentCardIndex = 0,
         movedCard;
-      console.log("onExiledDrop", zone);
+      // console.log("onExiledDrop", zone);
       switch (zone) {
         case "hand":
           let updatedHand = [...this.hand];
@@ -515,7 +521,7 @@ export default class PlaytestStore {
     // e.persist();
     const zone = e.target.dataset.id.split("-")[0];
     const cardID = e.target.dataset.id.split("-")[1];
-    console.log("find data-id", zone, cardID);
+    // console.log("find data-id", zone, cardID);
 
     let updatedDeck,
       movedCard,
@@ -576,11 +582,11 @@ export default class PlaytestStore {
       }
     });
     if (direction === "top") {
-      console.log("top", cardID);
+      // console.log("top", cardID);
       updatedHand.splice(currentCardIndex, 1);
       updatedDeck.unshift(movedCard);
     } else {
-      console.log("bottom", cardID);
+      // console.log("bottom", cardID);
       updatedHand.splice(currentCardIndex, 1);
       updatedDeck.push(movedCard);
     }

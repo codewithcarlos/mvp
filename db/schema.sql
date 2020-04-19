@@ -8,5 +8,8 @@ CREATE TABLE cards (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   imageUrl TEXT NOT NULL,
-  multiverseid INT
+  multiverseid INT,
+  manaCost VARCHAR(50),
+  cmc INT NOT NULL,
+  types VARCHAR(70) NOT NULL
 );

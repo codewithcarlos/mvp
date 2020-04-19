@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { RootStoreContext } from "../stores/rootStore";
 import DraggableCard from "./DraggableCard";
-import { observer } from 'mobx-react-lite';
+import { observer } from "mobx-react-lite";
 
 const Battleground = () => {
   const rootStore = useContext(RootStoreContext);
@@ -12,7 +12,7 @@ const Battleground = () => {
     field,
   } = rootStore.playtestStore;
   const [indexCounter, setIndexCounter] = useState(0);
-  console.log("battleground rerendered");
+  // console.log("battleground rerendered");
   return (
     <div
       className="battleground"

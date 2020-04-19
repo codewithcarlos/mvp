@@ -5,7 +5,7 @@ const Search = ({ zone, zoneId, handleDropdownSelection }) => {
   const [term, setTerm] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [list, setList] = useState([]);
-  console.log("search rerendered");
+  // console.log("search rerendered");
 
   useEffect(() => {
     if (!zone.length) return;

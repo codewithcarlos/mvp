@@ -1,5 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import App from "./playtest/PlaytestPage";
+import PlaytestPage from "./playtest/PlaytestPage";
+import Metagame from "./metagame/Metagame";
+import DeckPage from "./deck/DeckPage";
+import "mobx-react-lite/batchingForReactDom";
 
-ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render(<DeckPage />, document.getElementById("root"));

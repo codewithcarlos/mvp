@@ -7,7 +7,7 @@ const DraggableCard = ({ card, indexCounter, setIndexCounter }) => {
   const { coordinates, untapAll, onDragStart } = rootStore.playtestStore;
   const [counter, setCounter] = useState(0);
   const [isRotated, setIsRotated] = useState(false);
-  console.log("draggablecard rerendered", card.cardID);
+  // console.log("draggablecard rerendered", card.cardID);
 
   useEffect(() => {
     setIsRotated(false);

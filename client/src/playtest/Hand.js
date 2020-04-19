@@ -11,7 +11,7 @@ const Hand = () => {
     onDragOver,
     onDragEnd,
   } = rootStore.playtestStore;
-  console.log("hand rerendered", hand);
+  // console.log("hand rerendered", hand);
   return (
     <div
       className="hand"

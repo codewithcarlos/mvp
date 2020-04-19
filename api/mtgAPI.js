@@ -13,5 +13,8 @@ const findCardByName = (term, callback) => {
     callback(result);
   });
 };
+// findCardByName("Walking Ballista", (data) => {
+//   console.log(data[0]);
+// });
 
 module.exports = { getMagicCard, findCardByName };

@@ -7,7 +7,7 @@ const Card = ({ card, left, position }) => {
   const [showPopup, setShowPopup] = useState(false);
   const rootStore = useContext(RootStoreContext);
   const { handlePopupClick, onDragStart } = rootStore.playtestStore;
-  console.log("card rerendered", card.cardID);
+  // console.log("card rerendered", card.cardID);
 
   return (
     <div

@@ -13,7 +13,9 @@ const db = mysql.createConnection({
 db.connect();
 
 function insertCard(params, callback) {
-  const queryStr = `INSERT INTO cards (name, imageUrl, multiverseid) VALUES (?, ?, ?);`;
+  const queryStr = `INSERT INTO cards 
+  (name, imageUrl, multiverseid, manaCost, cmc, types) 
+  VALUES (?, ?, ?, ?, ?, ?);`;
   db.query(queryStr, params, (err, data) => {
     if (err) {
       callback(err, null);
@@ -107,9 +109,6 @@ function getDeck(deck, callback) {
     });
   };
   recurse(0);
-  // deck.forEach((card, index) => {
-
-  // });
 }
 
 const handleFoundCard = (data) => {
@@ -127,17 +126,31 @@ const handleFoundCard = (data) => {
   } else {
     multiverseid = firstValidCard.multiverseid;
   }
-  let { name, imageUrl } = firstValidCard;
+  let { name, imageUrl, manaCost, cmc, types } = firstValidCard;
   if (imageUrl === undefined) {
-    console.log("image not found for card", name);
+    // console.log("image not found for card", name);
     imageUrl = "";
   }
-  // console.log("handle found card:", name, imageUrl, multiverseid);
-  return [name, imageUrl, multiverseid];
+  types = types.join(",");
+  const result = [name, imageUrl, multiverseid, manaCost, cmc, types];
+  // console.log("handle found card:", result);
+  return result;
 };
+
+function getPostedDeck(queryStr, callback) {
+  const queryString = 'SELECT * FROM cards WHERE name in ' + queryStr;
+  db.query(queryString, (err, data) => {
+    if (err) {
+      callback(err, null);
+    }
+    callback(null, data);
+  });
+}
 
 module.exports = {
   db,
   insertCard,
   getDeck,
+  handleFoundCard,
+  getPostedDeck,
 };

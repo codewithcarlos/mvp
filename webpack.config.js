@@ -1,6 +1,7 @@
 var path = require("path");
 var SRC_DIR = path.join(__dirname, "client/src");
 var DIST_DIR = path.join(__dirname, "public");
+// const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: ["@babel/polyfill", `${SRC_DIR}/index.js`],

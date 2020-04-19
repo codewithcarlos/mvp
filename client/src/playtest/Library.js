@@ -12,7 +12,7 @@ const Library = ({}) => {
     onDragEnd,
     library,
   } = rootStore.playtestStore;
-  console.log('Library rerendered');
+  // console.log('Library rerendered');
   return (
     <div
       id="deck"

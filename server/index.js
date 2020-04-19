@@ -12,8 +12,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "..", "public")));
 
-app.get("/", function (req, res) {
-});
+app.get("/", function (req, res) {});
 
 app.get("/card", (req, res) => {
   getMagicCard((data) => {
@@ -44,6 +43,17 @@ app.get("/deck", (req, res) => {
   db.getDeck(req.query.importedDeck, (err, data) => {
     if (err) {
       return res.status(404).send(`error getting deck. ${err}`);
+    }
+    res.status(200).send(data);
+  });
+});
+
+app.post("/deck", (req, res) => {
+
+  const { queryString } = req.body;
+  db.getPostedDeck(queryString, (err, data) => {
+    if (err) {
+      return res.status(404).send(`error getting posted deck. ${err}`);
     }
     res.status(200).send(data);
   });

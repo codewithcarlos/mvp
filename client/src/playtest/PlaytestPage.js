@@ -8,12 +8,11 @@ import Hand from "./Hand";
 import Library from "./Library";
 import Graveyard from "./Graveyard";
 import Exiled from "./Exiled";
-import "./PlaytestPage.css";
 
 const PlaytestPage = () => {
   const rootStore = useContext(RootStoreContext);
   const { library, parseDeck } = rootStore.playtestStore;
-  console.log("Playtest page rerendered");
+  // console.log("Playtest page rerendered");
   useEffect(() => {
     parseDeck();
   }, []);
