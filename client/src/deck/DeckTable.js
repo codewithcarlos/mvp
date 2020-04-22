@@ -5,54 +5,78 @@ import TableSection from "./TableSection";
 
 const DeckTable = () => {
   const rootStore = useContext(RootStoreContext);
-  const { deck, count } = rootStore.DeckStore;
+  const { library, count, sideboard } = rootStore.DeckStore;
 
   return (
-    <div className="table-deck">
-      {!deck ? (
+    <div className="deck-table">
+      {!library ? (
         <span>Loading Deck</span>
       ) : (
-        <table>
+        <table className="table-deck">
           <tbody>
             {count.Creature && (
               <tr>
-                <td>{`Creatures (${count.Creature.count})`} </td>
+                <td
+                  colSpan="4"
+                  className="col-type-header-creatures"
+                >{`Creatures (${count.Creature.count})`}</td>
               </tr>
             )}
             <TableSection section={count.Creature} />
-            {(count.Instant || count.Sorcery) && (
+            {count.Spells && (
               <tr>
-                <td>{`Instants and Sorceries (${
-                  (count.Instant.count || 0) + (count.Sorcery.count || 0)
-                })`}</td>
+                <td
+                  colSpan="4"
+                  className="col-type-header"
+                >{`Instants and Sorceries (${count.Spells.count})`}</td>
               </tr>
             )}
-            <TableSection section={count.Instant} />
-            <TableSection section={count.Sorcery} />
+            <TableSection section={count.Spells} />
             {count.Planeswalker && (
               <tr>
-                <td>{`Planeswalkers (${count.Planeswalker.count})`}</td>
+                <td
+                  colSpan="4"
+                  className="col-type-header"
+                >{`Planeswalkers (${count.Planeswalker.count})`}</td>
               </tr>
             )}
             <TableSection section={count.Planeswalker} />
             {count.Artifact && (
               <tr>
-                <td>{`Artifacts (${count.Artifact.count})`}</td>
+                <td
+                  colSpan="4"
+                  className="col-type-header"
+                >{`Artifacts (${count.Artifact.count})`}</td>
               </tr>
             )}
             <TableSection section={count.Artifact} />
             {count.Enchantment && (
               <tr>
-                <td>{`Enchantments (${count.Enchantment.count})`}</td>
+                <td
+                  colSpan="4"
+                  className="col-type-header"
+                >{`Enchantments (${count.Enchantment.count})`}</td>
               </tr>
             )}
             <TableSection section={count.Enchantment} />
             {count.Land && (
               <tr>
-                <td>{`Lands (${count.Land.count})`}</td>
+                <td
+                  colSpan="4"
+                  className="col-type-header"
+                >{`Lands (${count.Land.count})`}</td>
               </tr>
             )}
             <TableSection section={count.Land} />
+            {count.Sideboard && (
+              <tr>
+                <td
+                  colSpan="4"
+                  className="col-type-header"
+                >{`Sideboard (${count.Sideboard.count})`}</td>
+              </tr>
+            )}
+            <TableSection section={count.Sideboard} />
           </tbody>
         </table>
       )}

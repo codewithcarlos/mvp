@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 
 const DeckTableView = () => {
   return (
-    <div>
+    <div className="deck-table-view">
       {/* <Tabs /> */}
       <DeckTable 
       // library={library}

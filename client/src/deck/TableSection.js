@@ -3,6 +3,13 @@ import TableItem from "./TableItem";
 import { observer } from "mobx-react-lite";
 
 const TableSection = ({ section }) => {
+  const classNames = {
+    'cardName': 'card-name',
+    'cardQuantity': 'card-quantity',
+    'manaCost': 'mana-cost',
+    'cmc': 'cmc'
+  };
+
   return (
     <>
       {section &&
@@ -15,7 +22,7 @@ const TableSection = ({ section }) => {
               })
               .map(([key, value], i) => {
                 return (
-                  <td key={i}>
+                  <td key={i} className={`col-${classNames[key]}`}>
                     <TableItem
                       predicate={key}
                       value={value}

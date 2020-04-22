@@ -13,8 +13,8 @@ const DeckPage = () => {
   useEffect(() => {
     const newCount = {};
     const deckArr = mockDeck.trim().split("\n");
-    const { postedDeck, queryString } = initializeDeckAndQueryString(deckArr);
-    fetchData(newCount, postedDeck, queryString);
+    const { postedDeck, sideboard, queryString } = initializeDeckAndQueryString(deckArr);
+    fetchData(newCount, postedDeck, sideboard, queryString);
   }, []);
 
   return (
@@ -22,8 +22,10 @@ const DeckPage = () => {
       <div className="deck-content-container">
         <h1>Jund</h1>
         <Gallery />
-        <DeckSidebar />
-        <DeckTableView />
+        <div className="container-flex">
+          <DeckSidebar />
+          <DeckTableView />
+        </div>
       </div>
     </div>
   );

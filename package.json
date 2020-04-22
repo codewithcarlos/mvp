@@ -6,7 +6,8 @@
   "scripts": {
     "build:dev": "webpack -d --watch",
     "start": "node server/index.js",
-    "server:dev": "nodemon server/index.js"
+    "server:dev": "nodemon server/index.js",
+    "dev": "npm run build:dev & npm run server:dev"
   },
   "repository": {
     "type": "git",

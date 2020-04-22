@@ -3,8 +3,11 @@ import { observer } from "mobx-react-lite";
 
 const Tools = () => {
   return (
-    <div>
-      
+    <div className="commands">
+      <button onClick={() => newGame()}>Buy from TCG Player</button>
+      <button onClick={() => newGame()}>Playtest</button>
+      <button onClick={() => newGame()}>Download</button>
+      <button onClick={() => newGame()}>Edit Deck</button>
     </div>
   )
 }

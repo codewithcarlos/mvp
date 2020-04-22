@@ -12,6 +12,9 @@ body {
 button {
   cursor: pointer;
 }
+tr {
+  font-weight: 400;
+}
 /*************************************************************************************************
 Playtest styling
 *************************************************************************************************/
@@ -228,6 +231,7 @@ DeckPage styling
 *************************************************************************************************/
 .deck-content-container {
   margin: 3rem;
+  /* max-width: 60%; */
 }
 .gallery {
   width: 200px;
@@ -241,10 +245,25 @@ DeckPage styling
   margin-right: 5px;
   border: 1px solid #ccc;
 }
-.table-deck {
+.deck-sidebar-container {
+  display: inline-block;
+  margin-top: 10px;
+}
+.deck-sidebar-container .commands {
+  width: 175px;
+}
+.deck-table-view {
   column-count: 2;
   -moz-column-count: 2;
   -webkit-column-count: 2;
+  margin-top: 10px;
+}
+.deck-table {
+  margin: 0 10px;
+}
+.table-deck {
+  width: 100%;
+  margin: 0 15px;
 }
 .table-card-name {
   cursor: pointer;
@@ -252,4 +271,49 @@ DeckPage styling
 .table-card-image {
   height: 300px;
   width: auto;
+}
+.col-type-header,
+.col-type-header-creatures {
+  font-size: 15px;
+  font-weight: 700;
+  padding: 5px 0;
+}
+.col-type-header-creatures {
+  padding: 0 0 5px 0;
+}
+.col-card-quantity {
+  padding-right: 5px;
+}
+.col-card-name {
+}
+.col-mana-cost {
+  display: inline-flex;
+  align-items: center;
+}
+.col-mana-cost img {
+  width: 15px;
+  height: 15px;
+}
+.colorless-mana {
+  background: lightgray;
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  text-align: center;
+  line-height: 14px;
+  font-weight: 500;
+  font-size: 16px;
+}
+.col-card-price {
+}
+
+/* table td[class*="col-"],
+table th[class*="col-"] {
+  position: static;
+  display: table-cell;
+  float: none;
+} */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
 }
