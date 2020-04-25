@@ -70,12 +70,28 @@ export default class PlaytestStore {
     return array;
   };
 
-  @action newGame = () => {
-    // console.log("library is", this.library, mockDeck);
-    if (!Array.isArray(this.library)) {
+  @action newGame = (deckLibrary, deckSideboard) => {
+    // if user visits playtest page directly without having first visited deck page 
+    if (!deckLibrary && !Array.isArray(this.library)) {
+      this.parseDeck();
       this.getCardImages(this.importedDeck);
       return;
     }
+
+    // if user hasn't initialized library
+    if (!Array.isArray(this.library)) {
+      const newLibrary = [];
+      let count = 0;
+      for (let card of deckLibrary) {
+        for (let i = 0; i < card.cardQuantity; i++) {
+          const newCard = { ...card };
+          newCard["cardID"] = count++;
+          newLibrary.push(newCard);
+        }
+      }
+      this.library = newLibrary;
+    }
+
     const shuffledDeck = this.shuffle([
       ...this.library,
       ...this.field,
@@ -83,15 +99,14 @@ export default class PlaytestStore {
       ...this.graveyard,
       ...this.exiled,
     ]);
-    // console.log("shuffledDeck", shuffledDeck, shuffledDeck.length);
+
     this.coordinates = {};
     this.field = this.graveyard = this.exiled = [];
     this.hand = shuffledDeck.slice(0, 7);
     this.library = shuffledDeck.slice(7);
-    // console.log(shuffledDeck, this.library);
   };
 
-  @action getCardImages = (importedDeck, cb) => {
+  @action getCardImages = (importedDeck) => {
     // console.log("axios called", importedDeck);
     axios
       .get("/deck", {
@@ -106,9 +121,7 @@ export default class PlaytestStore {
         }
         this.hand = data.slice(0, 7);
         this.library = data.slice(7, 60);
-        console.log("library is", this.library);
 
-        // cb([...this.hand, ...this.library]);
         return [...this.hand, ...this.library];
       })
       .catch((err) => {

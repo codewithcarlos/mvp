@@ -5,10 +5,10 @@ const Search = ({ zone, zoneId, handleDropdownSelection }) => {
   const [term, setTerm] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [list, setList] = useState([]);
-  // console.log("search rerendered");
+  // console.log("Search rerendered", zoneId);
 
   useEffect(() => {
-    if (!zone.length) return;
+    if (!zone.length && !list.length) return;
     const newList = [];
 
     zone.map((card) =>

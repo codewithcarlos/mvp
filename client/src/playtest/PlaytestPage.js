@@ -1,7 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { RootStoreContext } from "../stores/rootStore";
-import NavBar from "./NavBar";
 import Battleground from "./Battleground";
 import Commands from "./Commands";
 import Hand from "./Hand";
@@ -11,15 +10,10 @@ import Exiled from "./Exiled";
 
 const PlaytestPage = () => {
   const rootStore = useContext(RootStoreContext);
-  const { library, parseDeck } = rootStore.playtestStore;
-  // console.log("Playtest page rerendered");
-  useEffect(() => {
-    parseDeck();
-  }, []);
+  const { library } = rootStore.playtestStore;
 
   return (
     <div className="playtest">
-      <NavBar />
       <div className="container-flex">
         <Battleground />
         <Commands />

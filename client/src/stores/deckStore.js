@@ -92,12 +92,14 @@ export default class DeckStore {
           }
           
           // store data needed for playtest components
-          if (cardInLibrary)
-            cardInLibrary = { ...cardInLibrary, ...card };
+          if (cardInLibrary) {
+            postedDeck[card.name] = { ...cardInLibrary, ...card };
+          }
           if (inSideboard) {
             sideboard[card.name] = { ...sideboard[card.name], ...card };
           }
         });
+        // console.log('the posted deck is', postedDeck)
         return [newCount, postedDeck, sideboard];
       })
       .catch((err) => {
@@ -130,18 +132,18 @@ export default class DeckStore {
     for (let i = 0; i < manaCost.length; i += 3) {
       switch (manaCost[i + 1]) {
         case "R":
-          manaCostList.push("./mountain.jpg");
+          manaCostList.push("../mountain.jpg");
           break;
         case "W":
-          manaCostList.push("./plains.jpg");
+          manaCostList.push("../plains.jpg");
           break;
         case "G":
-          manaCostList.push("./forest.jpg");
+          manaCostList.push("../forest.jpg");
         case "B":
-          manaCostList.push("./swamp.jpg");
+          manaCostList.push("../swamp.jpg");
           break;
         case "U":
-          manaCostList.push("./island.jpg");
+          manaCostList.push("../island.jpg");
           break;
         default:
           manaCostList.push(manaCost[i + 1]);

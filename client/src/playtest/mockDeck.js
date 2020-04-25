@@ -65,7 +65,7 @@ const mockDeck = `2 Arid Mesa
 3 Kor Firewalker
 3 Path to Exile
 2 Rest in Peace
-1 Searing Blood
+2 Searing Blood
 2 Skullcrack
 3 Smash to Smithereens`;
 export default mockDeck;

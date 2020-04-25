@@ -2,7 +2,7 @@ import React, {useContext} from "react";
 import { RootStoreContext } from "../stores/rootStore";
 import { observer } from 'mobx-react-lite';
 
-const Library = ({}) => {
+const Library = () => {
   const rootStore = useContext(RootStoreContext);
   const {
     drawCard,
@@ -12,7 +12,7 @@ const Library = ({}) => {
     onDragEnd,
     library,
   } = rootStore.playtestStore;
-  // console.log('Library rerendered');
+  // console.log('Library rerendered', library);
   return (
     <div
       id="deck"
