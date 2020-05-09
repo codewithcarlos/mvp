@@ -40,7 +40,7 @@ app.get("/name", (req, res) => {
 });
 
 app.get("/deck", (req, res) => {
-  db.getDeck(req.query.importedDeck, (err, data) => {
+  db.getPostedDeck(req.query.importedDeck, (err, data) => {
     if (err) {
       return res.status(404).send(`error getting deck. ${err}`);
     }
@@ -49,7 +49,6 @@ app.get("/deck", (req, res) => {
 });
 
 app.post("/deck", (req, res) => {
-
   const { queryString } = req.body;
   db.getPostedDeck(queryString, (err, data) => {
     if (err) {

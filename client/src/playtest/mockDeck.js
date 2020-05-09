@@ -1,71 +1,39 @@
-// const mockDeck = `1 Archmage's Charm
-// 4 Arcum's Astrolabe
-// 1 Ashiok, Dream Render
-// 1 Batterskull
-// 1 Breeding Pool
-// 1 Celestial Colonnade
-// 2 Cryptic Command
-// 2 Field of Ruin
-// 4 Flooded Strand
-// 2 Force of Negation
-// 1 Hallowed Fountain
-// 3 Ice-Fang Coatl
-// 2 Jace, the Mind Sculptor
-// 2 Mana Leak
-// 4 Misty Rainforest
-// 2 Mystic Sanctuary
-// 1 Once Upon a Time
-// 4 Path to Exile
-// 2 Snapcaster Mage
-// 1 Snow-Covered Forest
-// 5 Snow-Covered Island
-// 1 Snow-Covered Plains
-// 1 Steam Vents
-// 4 Stoneforge Mystic
-// 2 Supreme Verdict
-// 1 Sword of Feast and Famine
-// 2 Teferi, Time Raveler
-// 1 Temple Garden
-// 2 Uro, Titan of Nature's Wrath
-
-// 2 Aether Gust
-// 1 Ashiok, Dream Render
-// 2 Blood Moon
-// 1 Disdainful Stroke
-// 1 Kor Firewalker
-// 1 Mystical Dispute
-// 1 Rest in Peace
-// 1 Return to Nature
-// 1 Surgical Extraction
-// 2 Timely Reinforcements
-// 2 Veil of Summer
-// `;
-
-const mockDeck = `2 Arid Mesa
-1 Bloodstained Mire
-4 Boros Charm
-4 Eidolon of the Great Revel
-1 Fiery Islet
-4 Goblin Guide
-4 Inspiring Vantage
-4 Lava Spike
-4 Lightning Bolt
-2 Lightning Helix
-4 Monastery Swiftspear
-3 Mountain
-4 Rift Bolt
-2 Sacred Foundry
-2 Scalding Tarn
-4 Searing Blaze
-4 Skewer the Critics
-2 Skullcrack
-4 Sunbaked Canyon
+const mockDeck = `3 Assassin's Trophy
+2 Blackcleave Cliffs
+1 Blood Crypt
+4 Bloodstained Mire
+1 Blooming Marsh
+2 Fatal Push
+3 Hexdrinker
+3 Inquisition of Kozilek
+3 Kolaghan's Command
+2 Kroxa, Titan of Death's Hunger
+2 Lightning Bolt
+1 Maelstrom Pulse
+4 Mishra's Bauble
+1 Nihil Spellbomb
+2 Nurturing Peatland
+2 Overgrown Tomb
+2 Scavenging Ooze
+2 Seal of Fire
+1 Snow-Covered Forest
+1 Snow-Covered Mountain
+1 Snow-Covered Swamp
+1 Stomping Ground
+4 Tarmogoyf
+4 Thoughtseize
+1 Unearth
+4 Verdant Catacombs
 1 Wooded Foothills
+2 Wrenn and Six
 
-3 Kor Firewalker
-3 Path to Exile
-2 Rest in Peace
-2 Searing Blood
-2 Skullcrack
-3 Smash to Smithereens`;
+1 Boil
+3 Collective Brutality
+2 Engineered Explosives
+1 Lurrus of the Dream-Den
+2 Nihil Spellbomb
+3 Pillage
+1 Shadowspear
+2 Veil of Summer
+`;
 export default mockDeck;

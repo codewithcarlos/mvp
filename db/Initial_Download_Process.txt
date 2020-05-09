@@ -1,0 +1,34 @@
+Documentation for the initial downloading of all existing Magic: the Gathering cards as of May 5, 2020.
+
+Step 1: Create cards table and populate it using the magicthegathering api
+The structure for the cards table is in the schema.sql file.
+The data insertion process was handled by the populateCards.js script.
+
+Step 2: Create a map/lookup table that links the setName given by mtg api to the setName given by the tcg api.
+This was a manual process. TCG groups setNames differently in how they name promo cards, prerelease cards, Commander sets, etc.
+The structure for tcg_set_names is in the schema.sql file.
+The db table was created via importing a csv file.
+
+Step 3: Create a cards_unqiue table that filters out duplicate entries from cards table
+The structure for the cards_unqiue table is in the schema.sql file.
+
+Step 4: Create a cards2 table that contains that has the tcg_set_lookup name and other tcg related variables like price and name
+The structure for cards2 is in the schema.sql file.
+
+Step 5: Create a cards_error table for cases where the card is not in the tcg database or if there are multiple versions of the card.
+The structure for cards_error is in the schema.sql file.
+
+Step 6: Update cards2 with TCG prices
+The data insertion process was handled by the updateCardsWithTCGPrices.js script.
+
+Step 7: Create a cards_error2 table to enable handling of cards with more than one product id
+The structure for cards_error2 is in the schema.sql file.
+
+Step 8: Handle cards that returned more than one product id when making a tcg api search request. Descriptions on why the tcg api can return multiple results for a given search result are elaborated on in the handleMultipleProductIds script. Insert cards into multiple_cards table.
+The structure for the multiple_cards table is in the schema.sql file.
+The handleMultipleProductIds.js script populates the multiple_cards table.
+
+Step 9: DELETE FROM cards2 WHERE id IN (SELECT id FROM card_errors);
+
+Step 10: Merge cards2 and multiple_cards together to create the final table: card.
+The structure for the "card" table is in the schema.sql file.

@@ -2,7 +2,7 @@ import React from "react";
 import { Popup } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 
-const TableItem = ({ predicate, value, imageUrl, j }) => {
+const TableItem = ({ predicate, value, imageUrl}) => {
   let element;
   if (predicate === "cardName") {
     element = (

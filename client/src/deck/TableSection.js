@@ -4,10 +4,11 @@ import { observer } from "mobx-react-lite";
 
 const TableSection = ({ section }) => {
   const classNames = {
-    'cardName': 'card-name',
-    'cardQuantity': 'card-quantity',
-    'manaCost': 'mana-cost',
-    'cmc': 'cmc'
+    cardName: "card-name",
+    cardQuantity: "card-quantity",
+    manaCost: "mana-cost",
+    cmc: "cmc",
+    marketPrice: "card-price",
   };
 
   return (
@@ -17,7 +18,6 @@ const TableSection = ({ section }) => {
           <tr key={i}>
             {Object.entries(card)
               .filter((card) => {
-                // console.log(card);
                 return card[0] !== "imageUrl" && card[0] !== "cmc";
               })
               .map(([key, value], i) => {

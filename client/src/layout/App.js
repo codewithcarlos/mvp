@@ -22,7 +22,7 @@ const App = () => {
           <>
             <Switch>
               <Route exact path="/metagame" component={Metagame} />
-              <Route strict path="/deck/:deckid" component={DeckPage} />
+              <Route path="/deck/:deckid" component={DeckPage} />
               <Route path="/playtest/:deckid" component={PlaytestPage} />
             </Switch>
           </>

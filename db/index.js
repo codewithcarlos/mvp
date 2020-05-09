@@ -41,10 +41,6 @@ function getDeck(deck, callback) {
           mtg.card
             .where({ name: card.indexOf("'") !== -1 ? card : `"${card}"` })
             .then((data) => {
-              // console.log(
-              //   `mtg card: deck is ${deck} and index is ${index}`,
-              //   data
-              // );
               if (data.length === 0) {
                 // console.log('card does not exist or was spelt incorrectly');
                 throw `The card ${card} does not exist or was spelt incorrectly`;
@@ -60,24 +56,11 @@ function getDeck(deck, callback) {
                   console.log("error inserting card");
                   callback(err, null);
                 } else {
-                  // console.log(
-                  //   "query the same card again",
-                  //   deck,
-                  //   index,
-                  //   result[0]
-                  // );
                   db.query(queryString, result[0], (err, data) => {
                     if (err) {
                       console.log("card does not exist");
                       callback(err, null);
                     } else {
-                      // console.log(
-                      //   "card exists",
-                      //   data,
-                      //   deck,
-                      //   index,
-                      //   deck.length - 1
-                      // );
                       deckWithImageInfo.push(data[0]);
                       if (index === deck.length - 1) {
                         // console.log(deckWithImageInfo);
@@ -138,7 +121,19 @@ const handleFoundCard = (data) => {
 };
 
 function getPostedDeck(queryStr, callback) {
-  const queryString = 'SELECT * FROM cards WHERE name in ' + queryStr;
+  const queryString = `
+  SELECT     
+    id,
+    name,
+    manaCost,
+    cmc,
+    types,
+    CASE WHEN imageUrl is null THEN tcg_imageUrl ELSE imageUrl END AS imageUrl,
+    marketPrice,
+    midPrice  
+  FROM min_market_prices
+  WHERE name in ${queryStr}`;
+
   db.query(queryString, (err, data) => {
     if (err) {
       callback(err, null);

@@ -41,8 +41,8 @@ export default class DeckStore {
         ? (sideboard[cardName] = { cardQuantity, cardName })
         : (postedDeck[cardName] = { cardQuantity, cardName });
       i + 1 === listArr.length
-        ? (queryString += `'${cardName}');`)
-        : (queryString += `'${cardName}',`);
+        ? (queryString += `"${cardName}");`)
+        : (queryString += `"${cardName}",`);
     }
     return { postedDeck, queryString, sideboard };
   };
@@ -65,6 +65,9 @@ export default class DeckStore {
               cmc: card.cmc,
               imageUrl: card.imageUrl,
               manaCost: manaCost,
+              marketPrice: (
+                card.marketPrice * sideboard[card.name].cardQuantity
+              ).toFixed(2),
             };
           } else {
             updatedCard = {
@@ -72,6 +75,9 @@ export default class DeckStore {
               cmc: card.cmc,
               imageUrl: card.imageUrl,
               manaCost: manaCost,
+              marketPrice: (
+                card.marketPrice * cardInLibrary.cardQuantity
+              ).toFixed(2),
             };
           }
 
@@ -80,17 +86,41 @@ export default class DeckStore {
           if (inSideboard && !cardInLibrary) {
             // if card is found only in sideboard, then add card only to sideboard
             cardType = "Sideboard";
-            this.handleCountObject(card, sideboard, newCount, updatedCard, cardType);
+            this.handleCountObject(
+              card,
+              sideboard,
+              newCount,
+              updatedCard,
+              cardType
+            );
           } else if (inSideboard && cardInLibrary) {
             // if card is found in both library and sideboard, add to both
-            this.handleCountObject(card, postedDeck, newCount, updatedCard, cardType);
+            this.handleCountObject(
+              card,
+              postedDeck,
+              newCount,
+              updatedCard,
+              cardType
+            );
             cardType = "Sideboard";
-            this.handleCountObject(card, sideboard, newCount, updatedCard, cardType);
+            this.handleCountObject(
+              card,
+              sideboard,
+              newCount,
+              updatedCard,
+              cardType
+            );
           } else {
             // add card only to library
-            this.handleCountObject(card, postedDeck, newCount, updatedCard, cardType);
+            this.handleCountObject(
+              card,
+              postedDeck,
+              newCount,
+              updatedCard,
+              cardType
+            );
           }
-          
+
           // store data needed for playtest components
           if (cardInLibrary) {
             postedDeck[card.name] = { ...cardInLibrary, ...card };
@@ -128,25 +158,97 @@ export default class DeckStore {
 
   @action handleManaCost = (manaCost) => {
     if (!manaCost) return "";
+    const regex = /((?!^)\{.*?\})/;
+    const splitManaCost = manaCost.split(regex).filter(Boolean);
     const manaCostList = [];
-    for (let i = 0; i < manaCost.length; i += 3) {
-      switch (manaCost[i + 1]) {
-        case "R":
+    for (let i = 0; i < splitManaCost.length; i++) {
+      switch (splitManaCost[i]) {
+        case "{R}":
           manaCostList.push("../mountain.jpg");
           break;
-        case "W":
+        case "{W}":
           manaCostList.push("../plains.jpg");
           break;
-        case "G":
+        case "{G}":
           manaCostList.push("../forest.jpg");
-        case "B":
+          break;
+        case "{B}":
           manaCostList.push("../swamp.jpg");
           break;
-        case "U":
+        case "{U}":
           manaCostList.push("../island.jpg");
           break;
+        case "{W/B}":
+          // manaCostList.push("../plains_swamp.jpg");
+          manaCostList.push("../WB.svg");
+          break;
+        case "{U/B}":
+          // manaCostList.push("../island_swamp.jpg");
+          manaCostList.push("../WB.svg");
+          break;
+        case "{W/U}":
+          // manaCostList.push("../plains_island.jpg");
+          manaCostList.push("../WU.svg");
+          break;
+        case "{S}":
+          manaCostList.push("../snow.jpg");
+          break;
+        case "{B/P}":
+          // manaCostList.push("../phyrexian_swamp.jpg");
+          manaCostList.push("../BP.svg");
+          break;
+        case "{R/G}":
+          // manaCostList.push("../mountain_forest.jpg");
+          manaCostList.push("../RG.svg");
+          break;
+        case "{B/R}":
+          // manaCostList.push("../swamp_mountain.jpg");
+          manaCostList.push("../BR.svg");
+          break;
+        case "{G/W}":
+          // manaCostList.push("../forest_plains.jpg");
+          manaCostList.push("../GW.svg");
+          break;
+        case "{U/R}":
+          // manaCostList.push("../island_mountain.jpg");
+          manaCostList.push("../UR.svg");
+          break;
+        case "{B/G}":
+          // manaCostList.push("../swamp_forest.jpg");
+          manaCostList.push("../BG.svg");
+          break;
+        case "{R/W}":
+          // manaCostList.push("../mountain_plains.jpg");
+          manaCostList.push("../RW.svg");
+          break;
+        case "{U/G}":
+          // manaCostList.push("../forest_island.jpg");
+          manaCostList.push("../UG.svg");
+          break;
+        case "{2/W}":
+          // manaCostList.push("../generic_plains.jpg");
+          manaCostList.push("../2W.svg");
+          break;
+        case "{2/U}":
+          // manaCostList.push("../generic_island.jpg");
+          manaCostList.push("../2U.svg");
+          break;
+        case "{2/B}":
+          // manaCostList.push("../generic_swamp.jpg");
+          manaCostList.push("../2B.svg");
+          break;
+        case "{2/R}":
+          // manaCostList.push("../generic_mountain.jpg");
+          manaCostList.push("../2R.svg");
+          break;
+        case "{2/G}":
+          // manaCostList.push("../generic_forest.jpg");
+          manaCostList.push("../2G.svg");
+          break;
         default:
-          manaCostList.push(manaCost[i + 1]);
+          manaCostList.push(
+            splitManaCost[i].substring(1, splitManaCost[i].length - 1)
+          );
           break;
       }
     }

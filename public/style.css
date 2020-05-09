@@ -305,6 +305,7 @@ DeckPage styling
   font-size: 16px;
 }
 .col-card-price {
+  text-align: right;
 }
 
 /* table td[class*="col-"],
